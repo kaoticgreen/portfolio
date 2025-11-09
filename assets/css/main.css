@@ -3950,3 +3950,50 @@ input, select, textarea {
 			opacity: 1;
 			visibility: visible;
 		}
+
+/* Custom fix for Robert Gervais | Portfolio */
+/* --- Layout Fix (from previous step) --- */
+
+#banner > .inner .content {
+	display: block;
+	flex-direction: column;
+	align-items: flex-start; /* Aligns content inside the flex-container (which is now block) */
+	text-align: left; /* Ensures text (like <p>) starts from the left */
+}
+
+	/* --- Alignment Fix for Typed Text and Button --- */
+
+	/* 1. Target the paragraph containing the typed text and left-align it. */
+	#banner > .inner .content p {
+		text-align: left;
+		width: 100%;
+	}
+
+	/* 2. Target the button's wrapper (the immediate <div> containing ul.actions) */
+	#banner > .inner .content > div {
+		margin-top: 1em;
+		text-align: left;
+	}
+
+	/* 3. Neutralize the horizontal spacing on the button list itself (ul.actions) */
+	#banner > .inner .content .actions {
+		justify-content: flex-start;
+		/* NEW FIX: Overriding the theme's negative margin and padding on ul.actions */
+		margin-left: 0;
+		padding-left: 0;
+	}
+
+		/* 4. Neutralize padding on the list item (li) if the theme added spacing there */
+		#banner > .inner .content .actions li {
+			padding-left: 0 !important; /* Forces removal of padding on list item */
+		}
+
+/* 5. Ensure the major header is also left-aligned (for a consistent look) */
+#banner > .inner header.major {
+	margin: 0;
+	width: 100%;
+}
+
+	#banner > .inner header.major > :first-child:after {
+		margin: 0.325em 0 0.5em 0;
+	}
