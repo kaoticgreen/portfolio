@@ -1,0 +1,171 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Programming Sample: Simple AI Behavior - Robert Gervais Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+
+    <div id="wrapper">
+
+        <header id="header">
+            <a href="index.html" class="logo"><strong>Robert Gervais</strong> <span>Portfolio</span></a>
+            <nav>
+                <a href="#menu">Menu</a>
+            </nav>
+        </header>
+
+        <nav id="menu">
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="landing.html">Samples</a></li>
+                <li><a href="programming-samples-overview.html">Programming Samples</a></li>
+                <li><a href="elements.html">Elements</a></li>
+            </ul>
+            <ul class="actions stacked">
+                <li><a href="#" class="button primary fit">Get Started</a></li>
+                <li><a href="#" class="button fit">Log In</a></li>
+            </ul>
+        </nav>
+
+        <div id="main" class="alt">
+
+            <section id="one">
+                <div class="inner">
+                    <header class="major">
+                        <h1>Simple AI Behavior Tree</h1>
+                    </header>
+                    <span class="image main"><img src="images/pic11.jpg" alt="Image of AI state machine diagram or behavior flow" /></span>
+
+                    <h2>Project Goal & Technical Stack</h2>
+                    <p>This project showcases a lightweight AI system designed for non-player characters (NPCs) and enemies. The system uses a simple **State Machine** pattern to manage behaviors like patrolling, seeking a target, and attacking, demonstrating clean transitions and robust logic.</p>
+                    <p><strong>Tools/Languages:</strong> Unity, C#, State Machine Pattern, Raycasting/Line-of-Sight Checks, and Git.</p>
+
+                    <h2>Technical Highlights</h2>
+                    <ul>
+                        <li>**Clear State Transitions:** Behavior is managed by a single `AI_Controller` script responsible for smooth transitions between `Patrol`, `Engage`, and `Rest` states.</li>
+                        <li>**Line-of-Sight Logic:** Implemented efficient raycasting with layer masks to determine if a player is visible and within engagement range.</li>
+                        <li>**Performance:** Designed to be highly performant by utilizing coroutines for non-critical tasks (like searching) and minimizing update logic.</li>
+                    </ul>
+
+                    <h2>Code Snippet: State Transition Logic</h2>
+                    <p>Below is a key code snippet showing how the AI decides to switch from Patrolling to Engaging:</p>
+                    <pre><code>// Excerpt from AI_Controller.cs
+private void Update()
+{
+    switch (currentState)
+    {
+        case AIState.Patrol:
+            HandlePatrol();
+            if (CheckForTarget())
+            {
+                TransitionToState(AIState.Engage);
+            }
+            break;
+        case AIState.Engage:
+            HandleEngage();
+            if (!IsTargetVisible())
+            {
+                TransitionToState(AIState.Rest);
+            }
+            break;
+        // ... other cases
+    }
+}</code></pre>
+
+                    <h2>Conclusion & Repository</h2>
+                    <p>This system highlights my understanding of fundamental AI logic in gameplay, prioritizing clear state management and efficient resource use. The full source code is available on my repository.</p>
+                    <ul class="actions">
+                        <li><a href="path/to/github_repo" class="button primary icon brands fa-github">View Source Code on GitHub</a></li>
+                        <li><a href="programming-samples-overview.html" class="button">Back to Programming Samples</a></li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <section id="contact">
+            <div class="inner">
+                <section>
+                    <form method="post" action="#">
+                        <div class="fields">
+                            <div class="field half">
+                                <label for="name">Name</label>
+                                <input type="text" name="name" id="name" />
+                            </div>
+                            <div class="field half">
+                                <label for="email">Email</label>
+                                <input type="text" name="email" id="email" />
+                            </div>
+                            <div class="field">
+                                <label for="message">Message</label>
+                                <textarea name="message" id="message" rows="6"></textarea>
+                            </div>
+                        </div>
+                        <ul class="actions">
+                            <li><input type="submit" value="Send Message" class="primary" /></li>
+                            <li><input type="reset" value="Clear" /></li>
+                        </ul>
+                    </form>
+                </section>
+                <section class="split">
+                    <section>
+                        <div class="contact-method">
+                            <span class="icon solid alt fa-envelope"></span>
+                            <h3>Email</h3>
+                            <a href="#">information@untitled.tld</a>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="contact-method">
+                            <span class="icon solid alt fa-phone"></span>
+                            <h3>Phone</h3>
+                            <span>(000) 000-0000 x12387</span>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="contact-method">
+                            <span class="icon solid alt fa-home"></span>
+                            <h3>Address</h3>
+                            <span>
+                                1234 Somewhere Road #5432<br />
+                                Nashville, TN 00000<br />
+                                United States of America
+                            </span>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </section>
+
+        <footer id="footer">
+            <div class="inner">
+                <ul class="icons">
+                    <li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                </ul>
+                <ul class="copyright">
+                    <li>&copy; Untitled</li>
+                    <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>

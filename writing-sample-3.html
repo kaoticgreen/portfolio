@@ -1,0 +1,161 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Writing Sample: Quest Flowchart & Script - Robert Gervais Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+
+    <div id="wrapper">
+
+        <header id="header">
+            <a href="index.html" class="logo"><strong>Robert Gervais</strong> <span>Portfolio</span></a>
+            <nav>
+                <a href="#menu">Menu</a>
+            </nav>
+        </header>
+
+        <nav id="menu">
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="landing.html">Samples</a></li>
+                <li><a href="writing-samples-overview.html">Writing Samples</a></li>
+                <li><a href="elements.html">Elements</a></li>
+            </ul>
+            <ul class="actions stacked">
+                <li><a href="#" class="button primary fit">Get Started</a></li>
+                <li><a href="#" class="button fit">Log In</a></li>
+            </ul>
+        </nav>
+
+        <div id="main" class="alt">
+
+            <section id="one">
+                <div class="inner">
+                    <header class="major">
+                        <h1>Quest Flowchart & Script</h1>
+                    </header>
+                    <span class="image main"><img src="images/pic11.jpg" alt="Image showcasing a quest design flowchart" /></span>
+
+                    <h2>Project Overview</h2>
+                    <p>This sample demonstrates my ability to translate a narrative goal into a **structurally sound, implementable quest** that accounts for player choice and conditional branching. This document serves as the primary handover for scripters and level designers to build the quest logic.</p>
+
+                    <h2>Key Technical Components</h2>
+                    <ul>
+                        <li>**Flowchart Logic:** Utilized visual tools (e.g., Miro, Visio) to map out all possible quest states, failure points, and rewards.</li>
+                        <li>**Scripting Conventions:** Adhered to strict formatting for dialogue delivery, including tags for required emotional tone, voice acting notes, and localization identifiers.</li>
+                        <li>**Conditional Branching:** Integrated **programming logic checks** (e.g., `IF PlayerHasItem("MacGuffin")`) directly into the script for clear implementation requirements.</li>
+                    </ul>
+
+                    <h2>Excerpt: Scripted Dialogue</h2>
+                    <p>The following shows how dialogue is formatted for scripting, including internal tags:</p>
+
+                    <div class="box">
+                        <pre><code>// SCENE START: VillageElder_Entrance_01
+NPC_Elder: [Tone: Anxious] Thank the heavens! The artifact—did you retrieve it?
+
+// BRANCH 1: Player has the artifact (Condition: GlobalVar.Artifact_Obtained == TRUE)
+PLAYER: I have it right here.
+NPC_Elder: [Tone: Relief] Excellent. This saves us all. *QuestComplete(Quest_ArtifactRetrieval)*
+
+// BRANCH 2: Player has failed (Condition: GlobalVar.Artifact_Destroyed == TRUE)
+PLAYER: It was destroyed. I couldn't save it.
+NPC_Elder: [Tone: Despair] Oh, the calamity! This changes everything. *QuestFail(Quest_ArtifactRetrieval)*</code></pre>
+                    </div>
+
+                    <h2>Conclusion</h2>
+                    <p>This sample highlights my commitment to **interdisciplinary documentation**. By clearly scripting narrative content with embedded technical logic, I minimize ambiguity and reduce friction during the implementation and QA phases.</p>
+                    <ul class="actions">
+                        <li><a href="path/to/full_quest_document.pdf" class="button primary icon solid fa-download">Download Full Document (PDF)</a></li>
+                        <li><a href="writing-samples-overview.html" class="button">Back to Writing Samples</a></li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <section id="contact">
+            <div class="inner">
+                <section>
+                    <form method="post" action="#">
+                        <div class="fields">
+                            <div class="field half">
+                                <label for="name">Name</label>
+                                <input type="text" name="name" id="name" />
+                            </div>
+                            <div class="field half">
+                                <label for="email">Email</label>
+                                <input type="text" name="email" id="email" />
+                            </div>
+                            <div class="field">
+                                <label for="message">Message</label>
+                                <textarea name="message" id="message" rows="6"></textarea>
+                            </div>
+                        </div>
+                        <ul class="actions">
+                            <li><input type="submit" value="Send Message" class="primary" /></li>
+                            <li><input type="reset" value="Clear" /></li>
+                        </ul>
+                    </form>
+                </section>
+                <section class="split">
+                    <section>
+                        <div class="contact-method">
+                            <span class="icon solid alt fa-envelope"></span>
+                            <h3>Email</h3>
+                            <a href="#">information@untitled.tld</a>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="contact-method">
+                            <span class="icon solid alt fa-phone"></span>
+                            <h3>Phone</h3>
+                            <span>(000) 000-0000 x12387</span>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="contact-method">
+                            <span class="icon solid alt fa-home"></span>
+                            <h3>Address</h3>
+                            <span>
+                                1234 Somewhere Road #5432<br />
+                                Nashville, TN 00000<br />
+                                United States of America
+                            </span>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </section>
+
+        <footer id="footer">
+            <div class="inner">
+                <ul class="icons">
+                    <li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                </ul>
+                <ul class="copyright">
+                    <li>&copy; Untitled</li>
+                    <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>

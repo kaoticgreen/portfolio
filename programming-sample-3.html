@@ -1,0 +1,173 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Programming Sample: Custom Editor Tool - Robert Gervais Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+
+    <div id="wrapper">
+
+        <header id="header">
+            <a href="index.html" class="logo"><strong>Robert Gervais</strong> <span>Portfolio</span></a>
+            <nav>
+                <a href="#menu">Menu</a>
+            </nav>
+        </header>
+
+        <nav id="menu">
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="landing.html">Samples</a></li>
+                <li><a href="programming-samples-overview.html">Programming Samples</a></li>
+                <li><a href="elements.html">Elements</a></li>
+            </ul>
+            <ul class="actions stacked">
+                <li><a href="#" class="button primary fit">Get Started</a></li>
+                <li><a href="#" class="button fit">Log In</a></li>
+            </ul>
+        </nav>
+
+        <div id="main" class="alt">
+
+            <section id="one">
+                <div class="inner">
+                    <header class="major">
+                        <h1>Custom Editor Tool</h1>
+                    </header>
+                    <span class="image main"><img src="images/pic11.jpg" alt="Image of a custom tool window in a game editor" /></span>
+
+                    <h2>Project Goal & Technical Stack</h2>
+                    <p>This sample demonstrates a **custom editor window** built to simplify and accelerate the process of placing level data and assigning narrative triggers. The primary goal was to reduce the time designers spent performing repetitive, error-prone tasks in the standard inspector.</p>
+                    <p>**Tools/Languages:** Unity Editor scripting, C#, Custom Inspectors, Editor GUILayout, and Scriptable Objects for configuration.</p>
+
+                    <h2>Technical Highlights</h2>
+                    <ul>
+                        <li>**Enhanced Workflow:** Consolidated six separate configuration steps into one streamlined editor window.</li>
+                        <li>**Error Reduction:** Implemented input validation and automated path checking to prevent common designer errors (e.g., missing component references or incorrect file paths).</li>
+                        <li>**Integration:** Utilized custom draw methods to integrate the tool seamlessly with existing project architecture, ensuring maintainability.</li>
+                    </ul>
+
+                    <h2>Code Snippet: Editor Window Setup</h2>
+                    <p>Below is a key code snippet showing the basic setup for a custom Editor window:</p>
+                    <pre><code>// Excerpt from LevelToolWindow.cs
+public class LevelToolWindow : EditorWindow
+{
+    // Function to initialize and display the window
+    [MenuItem("Tools/Robert/Level Placement Tool")]
+    public static void ShowWindow()
+    {
+        GetWindow<LevelToolWindow>("Level Placer");
+    }
+
+    private void OnGUI()
+    {
+        GUILayout.Label ("Place New Scene Trigger", EditorStyles.boldLabel);
+        
+        // Example: Drawing a custom field for designer input
+        triggerName = EditorGUILayout.TextField("Trigger Name:", triggerName);
+
+        if (GUILayout.Button("Generate Trigger"))
+        {
+            // Logic to create and configure the GameObject
+            GenerateTrigger();
+        }
+    }
+}</code></pre>
+
+                    <h2>Conclusion & Repository</h2>
+                    <p>This project showcases my ability to write code that empowers other team members, significantly improving production efficiency. The full source code is available, demonstrating robust Editor code practices.</p>
+                    <ul class="actions">
+                        <li><a href="path/to/github_repo" class="button primary icon brands fa-github">View Source Code on GitHub</a></li>
+                        <li><a href="programming-samples-overview.html" class="button">Back to Programming Samples</a></li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <section id="contact">
+            <div class="inner">
+                <section>
+                    <form method="post" action="#">
+                        <div class="fields">
+                            <div class="field half">
+                                <label for="name">Name</label>
+                                <input type="text" name="name" id="name" />
+                            </div>
+                            <div class="field half">
+                                <label for="email">Email</label>
+                                <input type="text" name="email" id="email" />
+                            </div>
+                            <div class="field">
+                                <label for="message">Message</label>
+                                <textarea name="message" id="message" rows="6"></textarea>
+                            </div>
+                        </div>
+                        <ul class="actions">
+                            <li><input type="submit" value="Send Message" class="primary" /></li>
+                            <li><input type="reset" value="Clear" /></li>
+                        </ul>
+                    </form>
+                </section>
+                <section class="split">
+                    <section>
+                        <div class="contact-method">
+                            <span class="icon solid alt fa-envelope"></span>
+                            <h3>Email</h3>
+                            <a href="#">information@untitled.tld</a>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="contact-method">
+                            <span class="icon solid alt fa-phone"></span>
+                            <h3>Phone</h3>
+                            <span>(000) 000-0000 x12387</span>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="contact-method">
+                            <span class="icon solid alt fa-home"></span>
+                            <h3>Address</h3>
+                            <span>
+                                1234 Somewhere Road #5432<br />
+                                Nashville, TN 00000<br />
+                                United States of America
+                            </span>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </section>
+
+        <footer id="footer">
+            <div class="inner">
+                <ul class="icons">
+                    <li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                </ul>
+                <ul class="copyright">
+                    <li>&copy; Untitled</li>
+                    <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>
