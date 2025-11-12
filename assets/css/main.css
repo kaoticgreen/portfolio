@@ -3951,7 +3951,7 @@ input, select, textarea {
 			visibility: visible;
 		}
 
-/* Custom fix for Robert Gervais | Portfolio */
+/* Custom Rules for Robert Gervais | Portfolio */
 /* --- Layout Fix (from previous step) --- */
 
 #banner > .inner .content {
@@ -3997,3 +3997,35 @@ input, select, textarea {
 	#banner > .inner header.major > :first-child:after {
 		margin: 0.325em 0 0.5em 0;
 	}
+
+/* This outer container provides a "page" feel */
+.script-container {
+	max-width: 650px; /* Adjust width as you like */
+	margin: 1em auto; /* Centers the container */
+	text-align: left; /* Default alignment */
+	font-family: 'Courier New', Courier, monospace; /* Classic script font */
+}
+
+/* Style for panel/action descriptions */
+.panel-desc {
+	font-style: italic;
+	margin-bottom: 1.5em;
+	margin-top: 1.5em;
+}
+
+/* Style for the CHARACTER NAME */
+.character {
+	text-align: center;
+	text-transform: uppercase;
+	font-weight: bold;
+	margin-top: 1em;
+	margin-bottom: 0; /* Remove space between name and dialogue */
+}
+
+/* Style for the dialogue */
+.dialogue {
+	/* This centers the block, not just the text */
+	width: 60%;
+	margin: 0.25em auto 1em auto;
+	text-align: left; /* Dialogue text is left-aligned within the center block */
+}

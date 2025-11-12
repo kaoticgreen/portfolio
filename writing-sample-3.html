@@ -36,100 +36,63 @@
             <section id="one">
                 <div class="inner">
                     <header class="major">
-                        <h1>Quest Flowchart & Script</h1>
+                        <h1>Seeds of Change</h1>
                     </header>
-                    <span class="image main"><img src="images/pic11.jpg" alt="Image showcasing a quest design flowchart" /></span>
+                    <span class="image main"><img src="images/seeds-of-change-by-robert-gervais.jpg" alt="Image: Robert Gervais" /></span>
 
                     <h2>Project Overview</h2>
-                    <p>This sample demonstrates my ability to translate a narrative goal into a **structurally sound, implementable quest** that accounts for player choice and conditional branching. This document serves as the primary handover for scripters and level designers to build the quest logic.</p>
-
-                    <h2>Key Technical Components</h2>
-                    <ul>
-                        <li>**Flowchart Logic:** Utilized visual tools (e.g., Miro, Visio) to map out all possible quest states, failure points, and rewards.</li>
-                        <li>**Scripting Conventions:** Adhered to strict formatting for dialogue delivery, including tags for required emotional tone, voice acting notes, and localization identifiers.</li>
-                        <li>**Conditional Branching:** Integrated **programming logic checks** (e.g., `IF PlayerHasItem("MacGuffin")`) directly into the script for clear implementation requirements.</li>
+                    <p>This sample demonstrates my ability to create a cast of characters, modify a well known setting, and leverage my knowledge of structure to create a plot that keeps a reader's attention throughout the length of the novel. The goal of my personal project, "Seeds of Change," was to write my first graphic novel so that I could adapt my knowledge of structure and form into a longform narrative that I can eventually turn into a game setting.</p>
+                    <ul class="actions">
+                        <li><a href="https://www.amazon.com/dp/B0FYNXS2BB" class="button primary icon brands alt fa-amazon">Read the Book</a></li>
                     </ul>
 
-                    <h2>Excerpt: Scripted Dialogue</h2>
-                    <p>The following shows how dialogue is formatted for scripting, including internal tags:</p>
+                    <h2>Key Narrative Components</h2>
+                    <ul>
+                        <li><strong>5 Act Structure:</strong> I constructructed the overall story arc using a 5 Act structure to move my characters through the inciting incident, complication, crisis, climax, and resolution.</li>
+                        <li><strong>Kishotenketsu:</strong> Inspired by Manga, I leveraged the ancient Chinese poetic form of Kishotenketsu to invent new twists and keep the story interesting within a scene.</li>
+                        <li><strong>Jo Ha Kyu:</strong> Inspired by interpretive dance, I constructed the aesthetics of each scene using the aesthetic philosophy of Jo Ha Kyu in order to build a unique environment that constantly changes for my characters to grapple with.</li>
+                    </ul>
+
+                    <h2>Excerpt from Issue 9: A Moment on the Bridge</h2>
+                    <p>This sample demonstrates narrative scripting for my graphic novel, showing how I use voice-over to build character and backstory during a quiet moment over the Hope Memorial Bridge in Cleveland.</p>
 
                     <div class="box">
-                        <pre><code>// SCENE START: VillageElder_Entrance_01
-NPC_Elder: [Tone: Anxious] Thank the heavens! The artifact—did you retrieve it?
+                        <div class="script-container">
 
-// BRANCH 1: Player has the artifact (Condition: GlobalVar.Artifact_Obtained == TRUE)
-PLAYER: I have it right here.
-NPC_Elder: [Tone: Relief] Excellent. This saves us all. *QuestComplete(Quest_ArtifactRetrieval)*
+                            <div class="panel-desc">
+                                [PANEL 1] We cut to an exterior shot of the ambulance, which is situated in the center of the column that is being led by the tank. This should be a bird's eye view of the convoy crossing the Hope Memorial Bridge over the Cuyahoga River.
+                            </div>
 
-// BRANCH 2: Player has failed (Condition: GlobalVar.Artifact_Destroyed == TRUE)
-PLAYER: It was destroyed. I couldn't save it.
-NPC_Elder: [Tone: Despair] Oh, the calamity! This changes everything. *QuestFail(Quest_ArtifactRetrieval)*</code></pre>
+                            <div class="character">SAL'S VOICE OVER</div>
+                            <div class="dialogue">You know what, Doc. I can't believe Kowalski's layin' here like a vegetable.</div>
+
+                            <div class="panel-desc">
+                                [PANEL 2] We see one of the Guardians of Transportation looking over Cleveland as Sal continues his voice over.
+                            </div>
+
+                            <div class="character">SAL'S VOICE OVER</div>
+                            <div class="dialogue">Back at the Academy, he kept tellin' us how great it was to grow up in Cleveland. He was proud to be from the city where Eliott Ness took on the mafia.</div>
+
+                            <div class="panel-desc">
+                                [PANEL 3] Cut to a shot of the convoy over the bridge as Sal keeps reminiscing.
+                            </div>
+
+                            <div class="character">SAL'S VOICE OVER</div>
+                            <div class="dialogue">Oh yeah, "The Untouchables," that's what it was. Anyway, when we discovered Dias' connection to the mob, it was this man, a proud son of Cleveland, who put it all on the line...</div>
+
+                        </div>
                     </div>
 
                     <h2>Conclusion</h2>
-                    <p>This sample highlights my commitment to **interdisciplinary documentation**. By clearly scripting narrative content with embedded technical logic, I minimize ambiguity and reduce friction during the implementation and QA phases.</p>
+                    <p>This sample highlights my commitment to complete a novel, which was an experience that leveled up my general storytelling abilities. To keep track of the different throughlines, I wrote the script with Scrivener.</p>
                     <ul class="actions">
-                        <li><a href="path/to/full_quest_document.pdf" class="button primary icon solid fa-download">Download Full Document (PDF)</a></li>
+                        <li><a href="samples/robert-gervais-issue-9-sample-script.pdf" class="button primary icon solid fa-download">Download Issue 9 Script (PDF)</a></li>
                         <li><a href="writing-samples-overview.html" class="button">Back to Writing Samples</a></li>
                     </ul>
                 </div>
             </section>
 
         </div>
-
-        <section id="contact">
-            <div class="inner">
-                <section>
-                    <form method="post" action="#">
-                        <div class="fields">
-                            <div class="field half">
-                                <label for="name">Name</label>
-                                <input type="text" name="name" id="name" />
-                            </div>
-                            <div class="field half">
-                                <label for="email">Email</label>
-                                <input type="text" name="email" id="email" />
-                            </div>
-                            <div class="field">
-                                <label for="message">Message</label>
-                                <textarea name="message" id="message" rows="6"></textarea>
-                            </div>
-                        </div>
-                        <ul class="actions">
-                            <li><input type="submit" value="Send Message" class="primary" /></li>
-                            <li><input type="reset" value="Clear" /></li>
-                        </ul>
-                    </form>
-                </section>
-                <section class="split">
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-envelope"></span>
-                            <h3>Email</h3>
-                            <a href="#">information@untitled.tld</a>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-phone"></span>
-                            <h3>Phone</h3>
-                            <span>(000) 000-0000 x12387</span>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-home"></span>
-                            <h3>Address</h3>
-                            <span>
-                                1234 Somewhere Road #5432<br />
-                                Nashville, TN 00000<br />
-                                United States of America
-                            </span>
-                        </div>
-                    </section>
-                </section>
-            </div>
-        </section>
 
         <footer id="footer">
             <div class="inner">
@@ -141,7 +104,7 @@ NPC_Elder: [Tone: Despair] Oh, the calamity! This changes everything. *QuestFail
                     <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
                 </ul>
                 <ul class="copyright">
-                    <li>&copy; Untitled</li>
+                    <li>&copy; Robert Gervais</li>
                     <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
                 </ul>
             </div>
