@@ -38,91 +38,124 @@
                     <header class="major">
                         <h1>Demon Crush</h1>
                     </header>
-                    <span class="image main"><img src="images/pic11.jpg" alt="Image of a spreadsheet or economy flow diagram" /></span>
+                    <span class="image main"><img src="images/demon-crush-by-reverting-castles.jpg" alt="Image: Reverting Castles" /></span>
 
-                    <h2>Project Overview: Balancing the Core Loop</h2>
-                    <p>This document details the economic loop for a survival/crafting game, specifically focusing on the acquisition, consumption, and sinks for three tiers of in-game resources. The goal was to maintain a **sustainable and engaging resource scarcity** that drives player progression without creating frustrating grind walls.</p>
+                    <h2>Project Overview</h2>
+                    <p>This sample demonstrates my ability to write cutscenes that advance the plot in-game, apply narrative design to aesthetic elements in a 2D platformer fighting game, and implement custom narrative features for this game that we're building in Unreal Engine 5. The goal of "Demon Crush" is to implement a 2D platformer fighting game that looks like it could be played on a Super Nintendo Entertainment System, and my personal goal on the project is to implement a narrative design that players can feel in-game.</p>
 
-                    <h2>Economic Design Pillars</h2>
+                    <h2>Key Narrative Design Contributions</h2>
                     <ul>
-                        <li>**Scarcity:** Resource acquisition should decrease in volume over time to encourage exploration.</li>
-                        <li>**Interdependence:** No single resource should be sufficient; crafting must require combinations of different tiers (e.g., Tier 1 Wood + Tier 2 Metal).</li>
-                        <li>**Value Decay:** Late-game resources must quickly replace the value of early-game resources to prevent hoarding and obsolescence.</li>
+                        <li><strong>Environmental Storytelling:</strong> Designing all of the levels to ensure that the world of Gochima comes to life during gameplay.</li>
+                        <li><strong>Cutscene Design:</strong> Designing the cutscenes using animated Ukiyo-e panels to advance major plot points in-game.</li>
+                        <li><strong>Intensity Response:</strong> Designed and implemented the intensity reponse system using fuzzy logic techniques to get the game respond to the intensity of what's happening in-game.</li>
                     </ul>
 
-                    <h2>System Implementation Example: Resource Sink</h2>
-                    <p>To prevent late-game saturation, a primary resource sink was implemented through the **"Guild Tax"** system. This required a constant, low-level expenditure of rare resources to maintain the player's primary base and status.</p>
+                    <h2>Code Snippet: Intensity System (Fuzzy Logic)</h2>
+                    <p>This C++ snippet from the Unreal project shows the constructor for a 'Trapezoid' shape. This is a core component of the <strong>Intensity Response System</strong>, which uses fuzzy logic to define linguistic variables (like 'Low', 'Medium', 'High') for game states, allowing the system to react dynamically to gameplay intensity.</p>
+<pre><code>Trapezoid::Trapezoid(FString valueName, double a, double b, double c, double d)
+{
+    A = a;
+    B = b;
+    C = c;
+    D = d;
+    //          B------C
+    //         /        \
+    //        /          \
+    // (-e) +=  A          D += (+e)
+    if (A == B)
+        A += MathHelper::NegEpsilon;
+    
+    if (C == D)
+        D += MathHelper::PosEpsilon;
 
-                    <div class="box">
-                        <p>The total cost of the Guild Tax rises by 5% for every new structure built after the initial five. This scales the sink with the player's investment, making resource balancing an ongoing challenge, not a solved problem.</p>
+    s_ValueName = valueName;
+    d_LinguisticVal = -1;
+}</code></pre>
 
-                        <p>$$Tax\ Cost = Base\ Cost \times (1 + 0.05 \times (Structures - 5))$$</p>
-                    </div>
+                    <h3>Usage Example: Defining Fuzzy Rules</h3>
+                    <p>The following function demonstrates how the `Trapezoid` class is used to define linguistic values (e.g., "Low_Enemy_Count") and then combine them into fuzzy rules. This example rule set determines a resulting "Intensity_Value" based on the "Enemy_Num" and "Combo_Pts" inputs.</p>
+<pre><code>//basic fuzzy scenario test (enemy number, combo pts, intensity value)
+void TrapFuzzyScenario::BuildIntensityScenarioRules_Example()
+{
+    FString Enemy_Num = TEXT("Enemy_Num");
+    FString Combo_Pts = TEXT("Combo_Pts");
+    FString Intensity_Value = TEXT("Intensity_Value");
+
+    //first, build the scenario's ruleset
+    //start with sample antecendents, (ai, bi)
+    //ai = number of enemies
+    TrapLinguisticVariable* EnemyNum = new TrapLinguisticVariable(false, Enemy_Num);
+    check(EnemyNum != nullptr);
+    //bi = combo point values
+    TrapLinguisticVariable* ComboPts = new TrapLinguisticVariable(false, Combo_Pts);
+    check(ComboPts != nullptr);
+    //now, work on the consequence, ci
+    //ci = intensity
+    TrapLinguisticVariable* IntensityValue = new TrapLinguisticVariable(true, Intensity_Value);
+    check(IntensityValue != nullptr);
+
+    //define the antecedents
+    //a1 = "low enemy count" is between 1.0 and 4.0 enemies
+    EnemyNum->AddLinguisticValue(new Trapezoid(TEXT("Low_Enemy_Count"), 1.0, 1.5, 2.0, 4.0));
+    //a2 = "medium enemy count" is between 2.0 and 6.0 enemies
+    EnemyNum->AddLinguisticValue(new Trapezoid(TEXT("Medium_Enemy_Count"), 2.0, 4.0, 5.0, 6.0));
+    //a3 = "high enemy count" is between 5.0 and 8.0 enemies
+    EnemyNum->AddLinguisticValue(new Trapezoid(TEXT("High_Enemy_Count"), 5.0, 6.0, 7.0, 8.0));
+
+    //b1 = "low combo points" is between 100.0 and 375.0 combo points
+    ComboPts->AddLinguisticValue(new Trapezoid(TEXT("Low_Combo_Points"), 100.0, 150.0, 225.0, 375.0));
+    //b2 = "medium combo points" is between 225.0 and 500.0 combo points
+    ComboPts->AddLinguisticValue(new Trapezoid(TEXT("Medium_Combo_Points"), 225.0, 375.0, 400.0, 500.0));
+    //b3 = "high combo points" is between 400.0 and 775.0 combo points
+    ComboPts->AddLinguisticValue(new Trapezoid(TEXT("High_Combo_Points"), 400.0, 500.0, 625.0, 775.0));
+
+    //define the consequence
+    //c1 = "low intensity" is between 1.0 and 2.5
+    IntensityValue->AddLinguisticValue(new Trapezoid(TEXT("Low_Intensity"), 1.0, 1.5, 1.75, 2.5));
+    //c2 = "medium intensity" is between 1.75 and 4.0
+    IntensityValue->AddLinguisticValue(new Trapezoid(TEXT("Medium_Intensity"), 1.75, 2.5, 3.0, 4.0));
+    //c3 = "high intensity" is between 3.0 and 5.0
+    IntensityValue->AddLinguisticValue(new Trapezoid(TEXT("High_Intensity"), 3.0, 4.0, 4.5, 5.0));
+
+    //now, define the fuzzy rules, sigmai
+    //s1 = if enemy count is low or combo count is low, then intensity value is low
+    TrapFuzzyRuleHandle* Sigma1 = new TrapFuzzyRuleHandle();
+    check(Sigma1 != nullptr);
+    Sigma1->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::EMPTY, EnemyNum, TEXT("Low_Enemy_Count")));
+    Sigma1->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::OR, ComboPts, TEXT("Low_Combo_Points")));
+    Sigma1->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::EMPTY, IntensityValue, TEXT("Low_Intensity")));
+    //s2 = if enemy count is medium or combo count is medium, then intensity value is medium
+    TrapFuzzyRuleHandle* Sigma2 = new TrapFuzzyRuleHandle();
+    check(Sigma2 != nullptr);
+    Sigma2->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::EMPTY, EnemyNum, TEXT("Medium_Enemy_Count")));
+    Sigma2->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::OR, ComboPts, TEXT("Medium_Combo_Points")));
+    Sigma2->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::EMPTY, IntensityValue, TEXT("Medium_Intensity")));
+    //s3 = if enemy count is high or combo count is high, then intensity value is high
+    TrapFuzzyRuleHandle* Sigma3 = new TrapFuzzyRuleHandle();
+    check(Sigma3 != nullptr);
+    Sigma3->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::EMPTY, EnemyNum, TEXT("High_Enemy_Count")));
+    Sigma3->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::OR, ComboPts, TEXT("High_Combo_Points")));
+    Sigma3->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::EMPTY, IntensityValue, TEXT("High_Intensity")));
+
+    trapezoidalDefuzzifier->AddFuzzyRule(Sigma1);
+    trapezoidalDefuzzifier->AddFuzzyRule(Sigma2);
+    trapezoidalDefuzzifier->AddFuzzyRule(Sigma3);
+
+    AddLinguisticVariable(EnemyNum);
+    AddLinguisticVariable(ComboPts);
+    AddLinguisticVariable(IntensityValue);
+}</code></pre>
 
                     <h2>Conclusion</h2>
-                    <p>Effective game economics rely on detailed mathematical modeling and rigorous playtesting. This sample highlights my proficiency with **spreadsheet analysis and system balancing**, ensuring a fun and challenging progression curve. The full document includes the detailed balancing spreadsheet with all production and consumption rates.</p>
+                    <p>This sample highlights my proficiency with <strong>C++, Unreal Engine 5, and narrative systems</strong> to create a fun and immersive player experience in a 2D platformer fighting game. We've integrated my intensity system into the Demo to change the intensity of the music in-game, which can be downloaded from Demon Crush's Steam page.</p>
                     <ul class="actions">
-                        <li><a href="path/to/full_economy_spreadsheet.pdf" class="button primary icon solid fa-download">Download Full Analysis (PDF/Spreadsheet)</a></li>
+                        <li><a href="https://store.steampowered.com/app/2753400/Demon_Crush/" class="button primary icon brands fa-steam">Download on Steam</a></li>
                         <li><a href="design-samples-overview.html" class="button">Back to Design Samples</a></li>
                     </ul>
                 </div>
             </section>
 
         </div>
-
-        <section id="contact">
-            <div class="inner">
-                <section>
-                    <form method="post" action="#">
-                        <div class="fields">
-                            <div class="field half">
-                                <label for="name">Name</label>
-                                <input type="text" name="name" id="name" />
-                            </div>
-                            <div class="field half">
-                                <label for="email">Email</label>
-                                <input type="text" name="email" id="email" />
-                            </div>
-                            <div class="field">
-                                <label for="message">Message</label>
-                                <textarea name="message" id="message" rows="6"></textarea>
-                            </div>
-                        </div>
-                        <ul class="actions">
-                            <li><input type="submit" value="Send Message" class="primary" /></li>
-                            <li><input type="reset" value="Clear" /></li>
-                        </ul>
-                    </form>
-                </section>
-                <section class="split">
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-envelope"></span>
-                            <h3>Email</h3>
-                            <a href="#">information@untitled.tld</a>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-phone"></span>
-                            <h3>Phone</h3>
-                            <span>(000) 000-0000 x12387</span>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-home"></span>
-                            <h3>Address</h3>
-                            <span>
-                                1234 Somewhere Road #5432<br />
-                                Nashville, TN 00000<br />
-                                United States of America
-                            </span>
-                        </div>
-                    </section>
-                </section>
-            </div>
-        </section>
 
         <footer id="footer">
             <div class="inner">
@@ -134,7 +167,7 @@
                     <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
                 </ul>
                 <ul class="copyright">
-                    <li>&copy; Untitled</li>
+                    <li>&copy; Robert Gervais</li>
                     <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
                 </ul>
             </div>
@@ -146,7 +179,7 @@
     <script src="assets/js/jquery.scrolly.min.js"></script>
     <script src="assets/js/jquery.scrollex.min.js"></script>
     <script src="assets/js/browser.min.js"></script>
-    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets.js/breakpoints.min.js"></script>
     <script src="assets/js/util.js"></script>
     <script src="assets/js/main.js"></script>
 
