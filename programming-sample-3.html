@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE HTML>
 <html>
 <head>
-    <title>Programming Sample: Custom Editor Tool - Robert Gervais Portfolio</title>
+    <title>Programming Sample: Satoyama Dice AI - Robert Gervais Portfolio</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="assets/css/main.css" />
@@ -36,112 +36,136 @@
             <section id="one">
                 <div class="inner">
                     <header class="major">
-                        <h1>Custom Editor Tool</h1>
+                        <h1>Satoyama Dice</h1>
                     </header>
-                    <span class="image main"><img src="images/pic11.jpg" alt="Image of a custom tool window in a game editor" /></span>
 
-                    <h2>Project Goal & Technical Stack</h2>
-                    <p>This sample demonstrates a **custom editor window** built to simplify and accelerate the process of placing level data and assigning narrative triggers. The primary goal was to reduce the time designers spent performing repetitive, error-prone tasks in the standard inspector.</p>
-                    <p>**Tools/Languages:** Unity Editor scripting, C#, Custom Inspectors, Editor GUILayout, and Scriptable Objects for configuration.</p>
+                    <span class="image main"><img src="images/satoyama-dice-by-robert-gervais.jpg" alt="Image: Robert Gervais" /></span>
+
+                    <h2>Project Goal</h2>
+                    <p>This sample demonstrates the AI architecture for my LÖVE2D game, "Satoyama Dice." The primary goal was to create a challenging and fair CPU opponent that could analyze the 6x6 Sudoku-like game board, make strategic decisions, and use the same game mechanics available to the player (placing dice, using items, re-rolling).</p>
+                    <p><strong>Tools/Languages:</strong> <strong>LÖVE2D (Lua)</strong>, <strong>State Machines</strong>, <strong>Heuristic-Based Decision Making</strong>, and the <strong>Strategy Pattern</strong>.</p>
 
                     <h2>Technical Highlights</h2>
                     <ul>
-                        <li>**Enhanced Workflow:** Consolidated six separate configuration steps into one streamlined editor window.</li>
-                        <li>**Error Reduction:** Implemented input validation and automated path checking to prevent common designer errors (e.g., missing component references or incorrect file paths).</li>
-                        <li>**Integration:** Utilized custom draw methods to integrate the tool seamlessly with existing project architecture, ensuring maintainability.</li>
+                        <li><strong>Decoupled State Machine:</strong> The AI (<code>sd_ai.lua</code>) runs as a self-contained module with its own state (e.g., <code>isTurn</code>, <code>thinkingTime</code>, <code>pendingAction</code>). It's driven by the main game state (<code>sd_satoplay.lua</code>) but doesn't tangle with its logic.</li>
+                        <li><strong>Clean Interface:</strong> The AI requests read-only game state via accessor functions (e.g., <code>playState.getGrid()</code>, <code>playState.getDiceValues()</code>) and sends its chosen move as a simple data table (e.g., <code>{type = "PLACE_ON_GRID", ...}</code>). The game state then executes the action via <code>playState.performAiAction(action)</code>.</li>
+                        <li><strong>Pluggable Strategy Pattern:</strong> The AI's "brain" is not hard-coded. It delegates its decision to a <code>currentStrategy</code> module (<code>aiModule.currentStrategy:execute(gameState)</code>), allowing different AI "personalities" (e.g., Beginner, Aggressive, Heuristic) to be easily swapped.</li>
+                        <li><strong>Tiered Heuristic Logic:</strong> The core solver (<code>sd_ai_helper.lua</code>) uses a 3-tier heuristic to find strategic moves, mimicking human problem-solving: it first looks for "Naked Singles," then "Hidden Singles," and finally falls back to a brute-force correct move if no simple strategy is found.</li>
+                        <li><strong>"Thought" Visualization:</strong> The AI renders its analysis (potential moves, scores) to a separate LÖVE canvas (<code>aiModule.thoughtCanvas</code>). This provides an excellent debugging tool and a player-facing "show thoughts" feature.</li>
+                        <li><strong>Knowledge & Memory:</strong> The AI reacts to game events, such as player hints, and stores that information in a temporary "memory" (<code>revealedHintCells</code>, <code>hintKnowledgeTimer</code>) to make smarter short-term decisions.</li>
                     </ul>
 
-                    <h2>Code Snippet: Editor Window Setup</h2>
-                    <p>Below is a key code snippet showing the basic setup for a custom Editor window:</p>
-                    <pre><code>// Excerpt from LevelToolWindow.cs
-public class LevelToolWindow : EditorWindow
-{
-    // Function to initialize and display the window
-    [MenuItem("Tools/Robert/Level Placement Tool")]
-    public static void ShowWindow()
-    {
-        GetWindow<LevelToolWindow>("Level Placer");
+                    <h2>Code Snippets</h2>
+                    <p>The AI system is split into three main parts: the AI "brain" (state machine), the game state "actuator" (interface), and the "solver" (heuristic logic). Below are key snippets from each.</p>
+
+                    <h3>Snippet 1: The AI Brain's Turn</h3>
+                    <p>This function is the entry point for the AI's turn. It gathers all necessary data from the game, delegates the <em>decision</em> to its strategy module, and then stores the resulting <code>chosenAction</code> to be executed after a "thinking" delay.</p>
+                    <pre><code>-- Excerpt from sd_ai.lua
+function aiModule.startTurn(playState, cellSize)
+    aiModule.isTurn = true
+    aiModule.thinkingTime = 1.5 -- Simulate "thinking"
+    aiModule.showThoughts = true
+
+    -- Get all necessary game state information
+    local gameState = {
+        grid = playState.getGrid(),
+        diceValues = playState.getDiceValues(),
+        hint = playState.getHint(),
+        solution = playState.getSolution(),
+        revealedCells = aiModule.revealedHintCells,
+        cpuBombs = playState.getCPUBombs(),
+        cpuBullseyes = playState.getCPUBullseyes(),
+        canReroll = playState.getCanRerollCPU()
     }
 
-    private void OnGUI()
-    {
-        GUILayout.Label ("Place New Scene Trigger", EditorStyles.boldLabel);
+    -- DELEGATE the decision to the current strategy
+    local chosenAction, moveVisuals = aiModule.currentStrategy:execute(gameState)
+    aiModule.pendingAction = chosenAction -- Store the action
+
+    -- Draw the AI's thoughts to the canvas (simplified)
+    love.graphics.setCanvas(aiModule.thoughtCanvas)
+    love.graphics.clear()
+    if moveVisuals then
+        -- (Logic to draw scores and highlights on the canvas)
+    end
+    love.graphics.setCanvas()
+end</code></pre>
+
+                    <h3>Snippet 2: The Game's AI Interface</h3>
+                    <p>This function in the main play state file receives the simple action table from the AI module. It acts as the "actuator," translating the AI's intention into actual game state changes, like placing a tile or re-rolling.</p>
+                    <pre><code>-- Excerpt from sd_satoplay.lua (AI Interface)
+function satoPlayState.performAiAction(action)
+    if not action then
+        turnState.isCPUTurn, turnState.cpuTurnPhase = false, 'none'
+        return
+    end
+
+    if action.type == "PLACE_ON_GRID" then
+        placeTileOnGrid(action.row, action.col, action.diceValue, true)
+        turnState.isCPUTurn, turnState.cpuTurnPhase = false, 'none'
+    
+    elseif action.type == "SPEND_HINT" then
+        local revealedCells = {}
+        for r = 1, GRID_SIZE do
+            for c = 1, GRID_SIZE do
+                if not gridTiles[r][c] and solution[r][c] == action.value then
+                    table.insert(revealedCells, {row = r, col = c})
+                end
+            end
+        end
         
-        // Example: Drawing a custom field for designer input
-        triggerName = EditorGUILayout.TextField("Trigger Name:", triggerName);
+        -- Give the AI "knowledge" of the revealed cells
+        aiModule.registerHintKnowledge(revealedCells, 15)
+        cpuHintState.grid = {nil, nil}
+        turnState.isCPUTurn, turnState.cpuTurnPhase = false, 'none'
+    
+    elseif action.type == "RE-ROLL" then
+        if turnState.canReroll_cpu then
+            -- (Roll dice logic...)
+            turnState.cpuTurnPhase = 'rolling'
+            return true -- Tell the update loop the turn continues
+        end
+    
+    -- (Other actions like USE_BOMB, CREATE_BULLSEYE, etc.)
+    end
+end</code></pre>
 
-        if (GUILayout.Button("Generate Trigger"))
-        {
-            // Logic to create and configure the GameObject
-            GenerateTrigger();
-        }
-    }
-}</code></pre>
+                    <h3>Snippet 3: The 3-Tier Heuristic Solver</h3>
+                    <p>This is the core "solver" logic used by the Heuristic strategy. It demonstrates a tiered approach to finding a move, starting with the simplest (and most human-like) Sudoku strategies before resorting to a brute-force solution.</p>
+                    <pre><code>-- Excerpt from sd_ai_helper.lua
+function aiHelper.getStrategicHint(grid, solution)
+    -- Tier 1: Find "Naked Single" (only choice in a row/col/box).
+    local hint = findOnlyChoice(grid, solution)
+    if hint then
+        return hint
+    end
 
-                    <h2>Conclusion & Repository</h2>
-                    <p>This project showcases my ability to write code that empowers other team members, significantly improving production efficiency. The full source code is available, demonstrating robust Editor code practices.</p>
+    -- Tier 2: Find "Hidden Single" (last remaining cell for a number).
+    hint = findLastRemaining(grid, solution)
+    if hint then
+        return hint
+    end
+
+    -- Tier 3: If all strategic checks fail, find any correct move.
+    hint = findAnyCorrectMove(grid, solution)
+    if hint then
+        return hint
+    end
+
+    return nil
+end</code></pre>
+
+
+                    <h2>Conclusion</h2>
+                    <p>This AI architecture proved to be robust, maintainable, and easily extensible. By separating the AI's state, decision-making logic, and game-world interface, I could add new AI behaviors (like using new items) without refactoring the entire system. View the algorithm here.</p>
                     <ul class="actions">
-                        <li><a href="path/to/github_repo" class="button primary icon brands fa-github">View Source Code on GitHub</a></li>
+                        <li><a href="samples/robert-gervais-ai-helper-algorithm.pdf" class="button primary icon brands fa-download">View Algorithm (PDF)</a></li>
                         <li><a href="programming-samples-overview.html" class="button">Back to Programming Samples</a></li>
                     </ul>
                 </div>
             </section>
 
         </div>
-
-        <section id="contact">
-            <div class="inner">
-                <section>
-                    <form method="post" action="#">
-                        <div class="fields">
-                            <div class="field half">
-                                <label for="name">Name</label>
-                                <input type="text" name="name" id="name" />
-                            </div>
-                            <div class="field half">
-                                <label for="email">Email</label>
-                                <input type="text" name="email" id="email" />
-                            </div>
-                            <div class="field">
-                                <label for="message">Message</label>
-                                <textarea name="message" id="message" rows="6"></textarea>
-                            </div>
-                        </div>
-                        <ul class="actions">
-                            <li><input type="submit" value="Send Message" class="primary" /></li>
-                            <li><input type="reset" value="Clear" /></li>
-                        </ul>
-                    </form>
-                </section>
-                <section class="split">
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-envelope"></span>
-                            <h3>Email</h3>
-                            <a href="#">information@untitled.tld</a>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-phone"></span>
-                            <h3>Phone</h3>
-                            <span>(000) 000-0000 x12387</span>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-home"></span>
-                            <h3>Address</h3>
-                            <span>
-                                1234 Somewhere Road #5432<br />
-                                Nashville, TN 00000<br />
-                                United States of America
-                            </span>
-                        </div>
-                    </section>
-                </section>
-            </div>
-        </section>
 
         <footer id="footer">
             <div class="inner">
@@ -153,7 +177,7 @@ public class LevelToolWindow : EditorWindow
                     <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
                 </ul>
                 <ul class="copyright">
-                    <li>&copy; Untitled</li>
+                    <li>&copy; Robert Gervais</li>
                     <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
                 </ul>
             </div>
