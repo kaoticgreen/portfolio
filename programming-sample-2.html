@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE HTML>
 <html>
 <head>
-    <title>Programming Sample: Simple AI Behavior - Robert Gervais Portfolio</title>
+    <title>Programming Sample: UEFN Templates - Robert Gervais Portfolio</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="assets/css/main.css" />
@@ -36,110 +36,51 @@
             <section id="one">
                 <div class="inner">
                     <header class="major">
-                        <h1>Simple AI Behavior Tree</h1>
+                        <h1>Unreal Editor for Fortnite</h1>
                     </header>
-                    <span class="image main"><img src="images/pic11.jpg" alt="Image of AI state machine diagram or behavior flow" /></span>
+                    <span class="image main"><img src="images/verse-device-by-epic-games-inc.jpg" alt="Image: Epic Games, Inc." /></span>
 
-                    <h2>Project Goal & Technical Stack</h2>
-                    <p>This project showcases a lightweight AI system designed for non-player characters (NPCs) and enemies. The system uses a simple **State Machine** pattern to manage behaviors like patrolling, seeking a target, and attacking, demonstrating clean transitions and robust logic.</p>
-                    <p><strong>Tools/Languages:</strong> Unity, C#, State Machine Pattern, Raycasting/Line-of-Sight Checks, and Git.</p>
+                    <h2>Project Goal</h2>
+                    <p>This project showcases my role as <strong>Technical Director</strong> for several key Unreal Editor for Fortnite (UEFN) templates. My responsibility was to oversee the technical implementation, ensure best practices, and guide the development of these foundational examples for the UEFN community, demonstrating the power of the Verse programming language.</p>
+                    <p><strong>Tools/Languages:</strong> Unreal Editor for Fortnite (UEFN), Verse Programming Language, MetaHuman, Niagara, and Sequencer.</p>
 
-                    <h2>Technical Highlights</h2>
+                    <h2>Key Contributions</h2>
+                    <p>As Technical Director, I was responsible for the technical design and execution of templates that serve as the starting point for thousands of creators. My work involved architecture, code review, and establishing best practices for the Verse programming language.</p>
                     <ul>
-                        <li>**Clear State Transitions:** Behavior is managed by a single `AI_Controller` script responsible for smooth transitions between `Patrol`, `Engage`, and `Rest` states.</li>
-                        <li>**Line-of-Sight Logic:** Implemented efficient raycasting with layer masks to determine if a player is visible and within engagement range.</li>
-                        <li>**Performance:** Designed to be highly performant by utilizing coroutines for non-critical tasks (like searching) and minimizing update logic.</li>
+                        <li><strong>Verse Starter Template:</strong> Directed the technical development of this template, designed to introduce creators to the power of the <strong>Verse</strong> programming language for creating custom gameplay logic in UEFN.</li>
+                        <li><strong>Talisman Metahuman Template:</strong> Oversaw the integration of <strong>MetaHuman</strong> assets into UEFN, establishing a pipeline and best practices for using high-fidelity characters in Fortnite experiences.</li>
+                        <li><strong>Talisman Environment Template:</strong> Guided the team in leveraging high-quality assets from the Talisman demo to showcase advanced environment art and cinematic capabilities within UEFN.</li>
                     </ul>
 
-                    <h2>Code Snippet: State Transition Logic</h2>
-                    <p>Below is a key code snippet showing how the AI decides to switch from Patrolling to Engaging:</p>
-                    <pre><code>// Excerpt from AI_Controller.cs
-private void Update()
-{
-    switch (currentState)
-    {
-        case AIState.Patrol:
-            HandlePatrol();
-            if (CheckForTarget())
-            {
-                TransitionToState(AIState.Engage);
-            }
-            break;
-        case AIState.Engage:
-            HandleEngage();
-            if (!IsTargetVisible())
-            {
-                TransitionToState(AIState.Rest);
-            }
-            break;
-        // ... other cases
-    }
-}</code></pre>
+                    <section id="two">
+                        <div class="inner">
+                            <header class="major">
+                                <h2>Template Video</h2>
+                            </header>
+                            <p style="margin-top: 2em;">Watch this video that I directed to get an idea of what went into designing our UEFN Templates.</p>
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000;">
+                                <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                                        src="https://www.youtube.com/embed/EuMOGaNbbJk?si=TFj5fM9FYDpFGQQL"
+                                        title="YouTube video player"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                            <p class="video-caption">Video and image: Epic Games, Inc.</p>
+                        </div>
+                    </section>
 
-                    <h2>Conclusion & Repository</h2>
-                    <p>This system highlights my understanding of fundamental AI logic in gameplay, prioritizing clear state management and efficient resource use. The full source code is available on my repository.</p>
+                    <h2>Official Documentation</h2>
+                    <p>These templates serve as official documentation and foundational starting points for the UEFN community. My role was to ensure they were robust, scalable, and clearly demonstrated the power of UEFN and Verse. View the official documentation for these templates.</p>
                     <ul class="actions">
-                        <li><a href="path/to/github_repo" class="button primary icon brands fa-github">View Source Code on GitHub</a></li>
+                        <li><a href="https://dev.epicgames.com/documentation/en-us/fortnite/unreal-editor-for-fortnite-starter-templates" class="button primary icon solid fa-globe">View Documentation</a></li>
                         <li><a href="programming-samples-overview.html" class="button">Back to Programming Samples</a></li>
                     </ul>
                 </div>
             </section>
 
         </div>
-
-        <section id="contact">
-            <div class="inner">
-                <section>
-                    <form method="post" action="#">
-                        <div class="fields">
-                            <div class="field half">
-                                <label for="name">Name</label>
-                                <input type="text" name="name" id="name" />
-                            </div>
-                            <div class="field half">
-                                <label for="email">Email</label>
-                                <input type="text" name="email" id="email" />
-                            </div>
-                            <div class="field">
-                                <label for="message">Message</label>
-                                <textarea name="message" id="message" rows="6"></textarea>
-                            </div>
-                        </div>
-                        <ul class="actions">
-                            <li><input type="submit" value="Send Message" class="primary" /></li>
-                            <li><input type="reset" value="Clear" /></li>
-                        </ul>
-                    </form>
-                </section>
-                <section class="split">
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-envelope"></span>
-                            <h3>Email</h3>
-                            <a href="#">information@untitled.tld</a>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-phone"></span>
-                            <h3>Phone</h3>
-                            <span>(000) 000-0000 x12387</span>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="contact-method">
-                            <span class="icon solid alt fa-home"></span>
-                            <h3>Address</h3>
-                            <span>
-                                1234 Somewhere Road #5432<br />
-                                Nashville, TN 00000<br />
-                                United States of America
-                            </span>
-                        </div>
-                    </section>
-                </section>
-            </div>
-        </section>
 
         <footer id="footer">
             <div class="inner">
@@ -151,7 +92,7 @@ private void Update()
                     <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
                 </ul>
                 <ul class="copyright">
-                    <li>&copy; Untitled</li>
+                    <li>&copy; Robert Gervais</li>
                     <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
                 </ul>
             </div>
@@ -161,9 +102,9 @@ private void Update()
 
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/jquery.scrolly.min.js"></script>
-    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets.js/jquery.scrollex.min.js"></script>
     <script src="assets/js/browser.min.js"></script>
-    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets.js/breakpoints.min.js"></script>
     <script src="assets/js/util.js"></script>
     <script src="assets/js/main.js"></script>
 
