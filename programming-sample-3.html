@@ -23,11 +23,9 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="landing.html">Samples</a></li>
                 <li><a href="programming-samples-overview.html">Programming Samples</a></li>
-                <li><a href="elements.html">Elements</a></li>
             </ul>
             <ul class="actions stacked">
-                <li><a href="#" class="button primary fit">Get Started</a></li>
-                <li><a href="#" class="button fit">Log In</a></li>
+                <li><a href="robert-gervais-resume.pdf" class="button primary fit" target="_blank">View Resume (PDF)</a></li>
             </ul>
         </nav>
 
@@ -48,6 +46,7 @@
                     <h2>Technical Highlights</h2>
                     <ul>
                         <li><strong>Decoupled State Machine:</strong> The AI (<code>sd_ai.lua</code>) runs as a self-contained module with its own state (e.g., <code>isTurn</code>, <code>thinkingTime</code>, <code>pendingAction</code>). It's driven by the main game state (<code>sd_satoplay.lua</code>) but doesn't tangle with its logic.</li>
+                        <li><strong>Character State Stack:</strong> The Saikoro character (<code>sd_saikoro.lua</code>) uses its own state stack to manage animations, allowing high-priority expressions (like smiling or frowning) to temporarily override the base "idle" state.</li>
                         <li><strong>Clean Interface:</strong> The AI requests read-only game state via accessor functions (e.g., <code>playState.getGrid()</code>, <code>playState.getDiceValues()</code>) and sends its chosen move as a simple data table (e.g., <code>{type = "PLACE_ON_GRID", ...}</code>). The game state then executes the action via <code>playState.performAiAction(action)</code>.</li>
                         <li><strong>Pluggable Strategy Pattern:</strong> The AI's "brain" is not hard-coded. It delegates its decision to a <code>currentStrategy</code> module (<code>aiModule.currentStrategy:execute(gameState)</code>), allowing different AI "personalities" (e.g., Beginner, Aggressive, Heuristic) to be easily swapped.</li>
                         <li><strong>Tiered Heuristic Logic:</strong> The core solver (<code>sd_ai_helper.lua</code>) uses a 3-tier heuristic to find strategic moves, mimicking human problem-solving: it first looks for "Naked Singles," then "Hidden Singles," and finally falls back to a brute-force correct move if no simple strategy is found.</li>
@@ -56,9 +55,106 @@
                     </ul>
 
                     <h2>Code Snippets</h2>
-                    <p>The AI system is split into three main parts: the AI "brain" (state machine), the game state "actuator" (interface), and the "solver" (heuristic logic). Below are key snippets from each.</p>
+                    <p>The AI and character systems are split into main parts: the character's animation state, the AI "brain" (state machine), the game state "actuator" (interface), and the "solver" (heuristic logic). Below are key snippets from each.</p>
 
-                    <h3>Snippet 1: The AI Brain's Turn</h3>
+                    <h3>Snippet 1: Saikoro Character Expression & State</h3>
+                    <p>This snippet from <code>sd_saikoro.lua</code> demonstrates the character's animation system. To handle expressions like smiling or frowning, I implemented a simple state stack. When the game triggers a <code>smile()</code> or <code>frown()</code> action (in response to a correct or incorrect move), it pushes a new state (e.g., <code>"smiling"</code>) onto the stack. The character's <code>update</code> loop then processes logic for the <em>top-most</em> state. This allows high-priority expressions to interrupt the base "idle" state (like blinking or pupil tracking) and then automatically pop themselves off the stack when their animation timer expires, cleanly returning to the previous state.</p>
+                    <pre><code>-- Excerpt from sd_saikoro.lua (Character Animation State)
+
+----------------------------------------
+-- STATE STACK HELPERS
+----------------------------------------
+
+function Saikoro:getCurrentState()
+    return self.state.stack[#self.state.stack]
+end
+
+function Saikoro:pushState(state)
+    -- Don't push the same state twice
+    if self:getCurrentState() == state then return end
+    table.insert(self.state.stack, state)
+end
+
+function Saikoro:popState(state)
+    -- If a state is provided, only pop if it's the current one
+    if state and self:getCurrentState() ~= state then return end
+    
+    if #self.state.stack > 1 then -- Never pop the base "idle" state
+        table.remove(self.state.stack)
+    end
+end
+
+----------------------------------------
+-- UPDATE (Relevant States)
+----------------------------------------
+
+function Saikoro:update(dt, mouseX, mouseY)
+    -- ... (update animated values) ...
+
+    local currentState = self:getCurrentState()
+
+    -- Process logic based on the *top* of the state stack
+    if currentState == "frowning" then
+        self.state.mouth.sadScale = self.state.mouth.sadScale - dt
+        if self.state.mouth.sadScale < 0 then
+            self:popState("frowning") -- Frown timer done
+            self:pushState("decaying") -- Enter decay state
+            
+            -- Animate mouth back to neutral...
+            self.state.mouth.arcRadiusAnim:easeTo(0, 0.15, easeOutCubic)
+            self.state.mouth.rectHeightAnim:easeTo(self.size * 0.05, 0.2, easeOutCubic, function() 
+                self:popState("decaying") 
+            end)
+        end
+        
+    elseif currentState == "smiling" then
+        self.state.mouth.happyScale = self.state.mouth.happyScale - dt
+        if self.state.mouth.happyScale < 0 then
+            self:popState("smiling") -- Smile timer done
+            self:pushState("decaying") -- Enter decay state
+            
+            -- Animate mouth back to neutral...
+            local speed = (self.personality == "sleepy") and 0.8 or 0.2
+            self.state.mouth.rectHeightAnim:easeTo(self.size * 0.05, speed, easeOutCubic, function() self:popState("decaying") end)
+            self.state.mouth.arcRadiusAnim:easeTo(0, speed, easeOutCubic)
+        end
+    
+    -- ... (other states like idle, hinting) ...
+    
+    -- ... (Shared Logic like Blinking/Pupils) ...
+end
+
+----------------------------------------
+-- SAIKORO'S PUBLIC API (State Pushers)
+----------------------------------------
+
+function Saikoro:smile(force)
+    local currentState = self:getCurrentState()
+    -- Allow smile to override idle/hinting
+    if not force and (currentState ~= "idle" and currentState ~= "hinting") then return end
+    
+    self:clearLowPriorityStates() -- Removes "hinting", etc.
+    self:pushState("smiling")
+    
+    self.state.mouth.happyScale = 1.5 -- Smile for 1.5 seconds
+    self.state.mouth.rectHeightAnim:easeTo(0, 0.15, easeOutCubic)
+    self.state.mouth.arcRadiusAnim:easeTo((self.size * 0.4) / 2, 0.2, easeOutBack)
+end
+
+function Saikoro:frown()
+    local currentState = self:getCurrentState()
+    -- Only allow frown to override idle/hinting
+    if currentState ~= "idle" and currentState ~= "hinting" then return end
+    
+    self:clearLowPriorityStates()
+    self:pushState("frowning")
+
+    self.state.mouth.sadScale = 2.0 -- Frown for 2 seconds
+    self.state.mouth.rectHeightAnim:easeTo(0, 0.15, easeOutCubic)
+    self.state.mouth.arcRadiusAnim:easeTo(-(self.size * 0.4) / 2, 0.2, easeOutBack)
+end</code></pre>
+
+                    <h3>Snippet 2: The AI Brain's Turn</h3>
                     <p>This function is the entry point for the AI's turn. It gathers all necessary data from the game, delegates the <em>decision</em> to its strategy module, and then stores the resulting <code>chosenAction</code> to be executed after a "thinking" delay.</p>
                     <pre><code>-- Excerpt from sd_ai.lua
 function aiModule.startTurn(playState, cellSize)
@@ -91,7 +187,7 @@ function aiModule.startTurn(playState, cellSize)
     love.graphics.setCanvas()
 end</code></pre>
 
-                    <h3>Snippet 2: The Game's AI Interface</h3>
+                    <h3>Snippet 3: The Game's AI Interface</h3>
                     <p>This function in the main play state file receives the simple action table from the AI module. It acts as the "actuator," translating the AI's intention into actual game state changes, like placing a tile or re-rolling.</p>
                     <pre><code>-- Excerpt from sd_satoplay.lua (AI Interface)
 function satoPlayState.performAiAction(action)
@@ -130,7 +226,7 @@ function satoPlayState.performAiAction(action)
     end
 end</code></pre>
 
-                    <h3>Snippet 3: The 3-Tier Heuristic Solver</h3>
+                    <h3>Snippet 4: The 3-Tier Heuristic Solver</h3>
                     <p>This is the core "solver" logic used by the Heuristic strategy. It demonstrates a tiered approach to finding a move, starting with the simplest (and most human-like) Sudoku strategies before resorting to a brute-force solution.</p>
                     <pre><code>-- Excerpt from sd_ai_helper.lua
 function aiHelper.getStrategicHint(grid, solution)
@@ -155,11 +251,31 @@ function aiHelper.getStrategicHint(grid, solution)
     return nil
 end</code></pre>
 
+                    <section id="two">
+                        <div class="inner">
+                            <header class="major">
+                                <h2>Saikoro Character Video</h2>
+                            </header>
+                            <p style="margin-top: 2em;">Watch how Saikoro reacts to the player's actions.</p>
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000;">
+                                <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                                        src="https://www.youtube.com/embed/2Dm8uO3Tmck?si=A3HGpwz8LYkPzeon"
+                                        title="YouTube video player"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                            <p class="video-caption">Video and image: Epic Games, Inc.</p>
+                        </div>
+                    </section>
 
                     <h2>Conclusion</h2>
-                    <p>This AI architecture proved to be robust, maintainable, and easily extensible. By separating the AI's state, decision-making logic, and game-world interface, I could add new AI behaviors (like using new items) without refactoring the entire system. View the algorithm here.</p>
+                    <p>This architecture proved to be robust, maintainable, and easily extensible. By separating the character's state, the AI's decision-making logic, and the game-world interface, I could add new behaviors (like new items or character expressions) without refactoring the entire system. View the algorithm here.</p>
                     <ul class="actions">
-                        <li><a href="samples/robert-gervais-ai-helper-algorithm.pdf" class="button primary icon brands fa-download">View Algorithm (PDF)</a></li>
+                        <li><a href="samples/robert-gervais-ai-helper-algorithm.pdf" class="button primary icon solid fa-download">View Algorithm (PDF)</a></li>
+                    </ul>
+                    <ul class="actions">
                         <li><a href="programming-samples-overview.html" class="button">Back to Programming Samples</a></li>
                     </ul>
                 </div>
@@ -170,15 +286,12 @@ end</code></pre>
         <footer id="footer">
             <div class="inner">
                 <ul class="icons">
-                    <li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
-                    <li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
-                    <li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
-                    <li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
-                    <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                    <li><a href="https://www.linkedin.com/in/robert-gervais-358928249/" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                    <li><a href="https://x.com/RobertGDev" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
                 </ul>
                 <ul class="copyright">
                     <li>&copy; Robert Gervais</li>
-                    <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+                    <li>Design: <a href="https://html5.up.net">HTML5 UP</a></li>
                 </ul>
             </div>
         </footer>
