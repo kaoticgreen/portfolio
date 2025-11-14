@@ -1,0 +1,206 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Programming Sample: Student Game (Lua) - Robert Gervais Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+
+    <div id="wrapper">
+
+        <header id="header">
+            <a href="index.html" class="logo"><strong>Robert Gervais</strong> <span>Portfolio</span></a>
+            <nav>
+                <a href="#menu">Menu</a>
+            </nav>
+        </header>
+
+        <nav id="menu">
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="landing.html">Samples</a></li>
+                <li><a href="programming-samples-overview.html">Programming Samples</a></li>
+            </ul>
+            <ul class="actions stacked">
+                <li><a href="robert-gervais-resume.pdf" class="button primary fit" target="_blank">View Resume (PDF)</a></li>
+            </ul>
+        </nav>
+
+        <div id="main" class="alt">
+
+            <section id="one">
+                <div class="inner">
+                    <header class="major">
+                        <h1>From Where She Dreams</h1>
+                    </header>
+                    <span class="image main"><img src="images/fwsd-by-digipen-institute-of-technology.jpg" alt="Image: DigiPen Institute of Technology" /></span>
+
+                    <h2>Project Goal</h2>
+                    <p>This sample demonstrates my ability to blend narrative design and programming in a student game project, "From Where She Dreams." As the <strong>Narrative Designer, Writer, and Gameplay Programmer</strong>, I was responsible for scripting all narrative systems, including a multi-chapter "Choose Your Own Adventure" style text adventure, "Crowther's Fate," which was hidden in the game's journal system.</p>
+                    <p><strong>Tools/Languages:</strong> <strong>LuaJIT integration</strong>, <strong>Custom Game Engine</strong>, <strong>FMOD</strong>, and <strong>State Management</strong></p>
+
+                    <h2>Technical Highlights</h2>
+                    <ul>
+                        <li><strong>Narrative Scripting:</strong> Wrote and scripted the entire "Crowther's Fate" text adventure, including all branching paths, dialogue, and puzzle logic, directly in Lua using tables.</li>
+                        <li><strong>Stateful UI Logic:</strong> The journal UI is a large state machine. The <code>CreateJournalMenu</code> function checks a level variable (<code>GetLevelVariable("CurrentJournalPiece")</code>) to determine exactly which text table and button functions to load.</li>
+                        <li><strong>Dynamic Button Generation:</strong> Player choices (e.g., "Turn to Pg. 1") are not static. They are dynamically created by functions like <code>CreateEasterEggPage1Button</code>, which are only called when the player is on the correct "page" of the text adventure.</li>
+                        <li><strong>Cross-Level Persistence:</strong> The easter egg's progress is persistent across the entire game. Completing one chapter sets a global flag (e.g., <code>SetLevelVariable("ContinueToEasterEggCh2", true)</code>) that allows the next chapter to be accessed in a later level.</li>
+                        <li><strong>Complex Puzzle Logic:</strong> Scripted multiple classic riddles into the text adventure, including a "Gordion Knot" puzzle (solved with the "Classical Alexandrian Method"), a "river crossing" logic puzzle (fox, goose, corn), and a riddle based on the Fibonacci sequence.</li>
+                    </ul>
+
+                    <h2>Code Snippets</h2>
+                    <p>The entire text adventure was built in Lua. The first snippet shows the data structure for the narrative content, and the second shows the core state machine logic that displays it.</p>
+
+                    <h3>Snippet 1: Text Adventure Narrative (Lua Table)</h3>
+                    <p>This snippet from <code>BrickWallJournal.lua</code> shows how the narrative, choices, and page content for "Crowther's Fate" were stored in Lua tables.</p>
+                    <pre><code>-- Excerpt from BrickWallJournal.lua (Narrative Content)
+
+local EasterEgg_0 = {
+					  --Page 1--
+					  "CROWTHER'S FATE",
+					  "A Super Secret Text Adventure",
+					  "by Team Enso",
+					  "",
+					  "CHAPTER 2",
+					  "",
+					  "You arrive at Werner-Tyne's ",
+					  "shipyard. There are three",
+					  "doors just past the Loading",
+					  "Bay.",
+					  "",
+					  "Turn to Pg. 1 to Open the ",
+					  "door labeled 'Janitor'.",
+					  "Turn to Pg. 2 to Open the",
+					  "door labeled 'Superintendent'",
+					  "Turn to Pg. 3 to Open the",
+					  "Unlabeled Door."
+}
+
+local EasterEgg_13 = {
+					  --Page 1--
+					  "The Superintendent finishes",
+                      "his phone call with stamp", 
+					  "in-hand and pen at the ready.",
+					  "He tells you that the Union",
+					  "confirmed your presence and",
+					  "he processes your paperwork.",
+					  "He instructs you to change",
+					  "into the Werner-Tyne",
+					  "uniform and to report to the",
+					  "Blacksmith for work.",
+					  "",
+					  "Turn to Page 14 to go to the",
+					  "Blacksmith's Shop."
+}</code></pre>
+
+                    <h3>Snippet 2: Journal State Machine (Lua Function)</h3>
+                    <p>This function from <code>BrickWallJournal.lua</code> is the core of the journal's state machine. It checks the <code>CurrentJournal</code> variable and dynamically loads the correct text (<code>journalLines = ...</code>) and corresponding choice buttons (<code>CreateEasterEggPage...Button(...)</code>).</p>
+                    <pre><code>-- Excerpt from BrickWallJournal.lua (UI State Machine)
+
+function CreateJournalMenu(scene)
+  -- ... (Setup for the journal background) ...
+  
+  local journalX = -280
+  local journalY = 200
+  
+  local CurrentJournal = GetLevelVariable("CurrentJournalPiece")  
+  
+  if CurrentJournal == 0 then
+    journalLines = journal_0
+  elseif CurrentJournal == 1 then
+    journalLines = journal_1
+    -- ...
+    CreateJournalPage2Button(scene, overlay, buttonRight, buttonBottom)
+  
+  -- ... (Snipped: journal_2, 3, 4) ...
+  
+  elseif CurrentJournal == 5 then
+    journalLines = EasterEgg_0
+	CreateEasterEggPage1Button(scene, overlay, buttonLeft, buttonTop)
+	CreateEasterEggPage2Button(scene, overlay, buttonRight, buttonTop)
+	CreateEasterEggPage3Button(scene, overlay, buttonLeft, buttonBottom)
+  elseif CurrentJournal == 6 then
+    journalLines = EasterEgg_1
+  elseif CurrentJournal == 7 then
+    journalLines = EasterEgg_2
+	CreateEasterEggPage4Button(scene, overlay, buttonLeft, buttonBottom)
+	CreateEasterEggPage5Button(scene, overlay, buttonRight, buttonBottom)
+  
+  -- ... (Snipped: Dozens of states for all 56 pages) ...
+  
+  elseif CurrentJournal == 56 then
+    journalLines = XYZZY
+  end
+  
+  -- Loop to draw the selected text table to the screen
+  for i=1,#journalLines,1 do
+    -- ... (Logic to handle page breaks) ...
+    if journalLines[i] ~= nil then
+      createJournalText(overlay, "journText" .. tostring(i), journalLines[i], journalX, journalY, 1, journalFont, "left", "right")
+    end
+    journalY = journalY - journalFont:GetLineSkip() * 0.85
+  end
+  
+  -- ... (Cleanup and enabling buttons) ...
+end</code></pre>
+
+                    <section id="two">
+                        <div class="inner">
+                            <header class="major">
+                                <h2>Game Trailer</h2>
+                            </header>
+                            <p style="margin-top: 2em;">Watch the official trailer for "From Where She Dreams" to see the game's art style and mechanics in motion.</p>
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000;">
+                                <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                                        src="https://www.youtube.com/embed/1rPah95rIOg?si=kAogFBoIb964vpBV"
+                                        title="YouTube video player"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                            <p class="video-caption">Video: DigiPen Institute of Technology</p>
+                        </div>
+                    </section>
+
+                    <h2>Conclusion</h2>
+                    <p>This project was my first attempt at combining my interest in narrative design with my programming skills. By scripting a complex, persistent, and branching text adventure inside the game's existing journal, I was able to add significant depth and a rewarding secret for players to discover.</p>
+                    <ul class="actions">
+                        <li><a href="https://games.digipen.edu/games/from-where-she-dreams" class="button primary icon solid fa-download">Download the Game</a></li>
+                    </ul>
+                    <ul class="actions">
+                        <li><a href="programming-samples-overview.html" class="button">Back to Programming Samples</a></li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <footer id="footer">
+            <div class="inner">
+                <ul class="icons">
+                    <li><a href="https://www.linkedin.com/in/robert-gervais-358928249/" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                    <li><a href="https://x.com/RobertGDev" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+                </ul>
+                <ul class="copyright">
+                    <li>&copy; Robert Gervais</li>
+                    <li>Design: <a href="https://html5.up.net">HTML5 UP</a></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>
