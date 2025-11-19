@@ -1,0 +1,153 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Design Sample: Satoyama Dice Algorithms - Robert Gervais Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+
+    <div id="wrapper">
+
+        <header id="header">
+            <a href="index.html" class="logo"><strong>Robert Gervais</strong> <span>Portfolio</span></a>
+            <nav>
+                <a href="#menu">Menu</a>
+            </nav>
+        </header>
+
+        <nav id="menu">
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="landing.html">Samples</a></li>
+                <li><a href="design-samples-overview.html">Design Samples</a></li>
+            </ul>
+            <ul class="actions stacked">
+                <li><a href="robert-gervais-resume.pdf" class="button primary fit" target="_blank">View Resume (PDF)</a></li>
+            </ul>
+        </nav>
+
+        <div id="main" class="alt">
+
+            <section id="one">
+                <div class="inner">
+                    <header class="major">
+                        <h1>Satoyama Dice: Algorithmic Design</h1>
+                    </header>
+                    <span class="image main"><img src="images/satoyama-dice-by-robert-gervais.jpg" alt="Satoyama Dice Gameplay" /></span>
+
+                    <h2>Project Goal</h2>
+                    <p>For my game "Satoyama Dice," I needed to ensure that the core logic governing difficulty adjustment, puzzle solving, and parameter optimization was mathematically sound before implementation. To achieve this, I utilized <strong>Formal Methods</strong> to design and verify these algorithms. I wrote specifications in <strong>TLA+ (Temporal Logic of Actions)</strong> to model the state space of these systems, ensuring they were robust and free of deadlocks.</p>
+                    <p><strong>Tools/Languages:</strong> TLA+, Formal Verification, Lua (Implementation), Genetic Algorithms, PID Controllers.</p>
+
+                    <h2>Key Technical Designs</h2>
+                    <ul>
+                        <li><strong>Dynamic Difficulty (Profile Manager):</strong> Designed a <strong>PID Controller</strong> based system that tracks player history and adjusts the number of "clues" provided in puzzles. The TLA+ spec verifies that the difficulty stabilizes within valid bounds (Min/Max Clues) based on a set "Target Mistakes" value.</li>
+                        <li><strong>Heuristic Solver (AI Helper):</strong> Modeled a 3-tier Sudoku solving algorithm to simulate human-like deduction. The spec defines a state machine that attempts "Naked Singles" (Only Choice), then "Hidden Singles" (Last Remaining), and finally falls back to Brute Force, ensuring a valid hint is always found if one exists.</li>
+                        <li><strong>Parameter Optimization (GA Optimizer):</strong> Designed a <strong>Genetic Algorithm</strong> to automatically tune the "Target Mistakes" variable for the difficulty system. The model simulates populations, selection pressure, and mutation over generations to verify convergence properties.</li>
+                    </ul>
+
+                    <h2>TLA+ Specifications</h2>
+                    <p>Below are excerpts from the formal specifications I wrote to verify these systems.</p>
+
+                    <h3>1. Profile Manager (PID Difficulty Adjustment)</h3>
+                    <p>This specification models the player profile and the logic for updating puzzle difficulty. The <code>UpdateDifficulty</code> action demonstrates the Proportional (P) controller logic used to calculate the necessary adjustment to the clue count.</p>
+                    <pre><code>(* Excerpt from ProfileManager.tla *)
+
+-- Action: Adjust the number of clues based on the player's performance.
+-- This models the PID controller logic from the Lua module.
+UpdateDifficulty(actualMistakes) ==
+    /\ LET
+        error == targetMistakes - actualMistakes
+        adjustment == (error * Kp_num) \div Kp_den
+        newClues == currentClues - adjustment
+       IN
+        currentClues' = Clamp(newClues, MinClues, MaxClues)
+    /\ UNCHANGED <<history, targetMistakes>></code></pre>
+
+                    <h3>2. AI Helper (Tiered Solver)</h3>
+                    <p>This specification details the "Tier 2" heuristic: finding a "Hidden Single" (Last Remaining Cell). It checks rows, columns, and boxes to find a value that can only legally go in one specific cell, mimicking intermediate human strategies.</p>
+                    <pre><code>(* Excerpt from AIHelper.tla *)
+
+-- Tier 2 Action: Find a "Last Remaining Cell" (Hidden Single) hint.
+FindLastRemaining ==
+    /\ pc = "find_last_remaining"
+    /\ \/ (* Search in a row *)
+          (\E r \in 1..GRID_SIZE, v \in ValidValue :
+              LET PossibleCells == {c \in 1..GRID_SIZE : IsPossible(grid, r, c, v)}
+              IN Cardinality(PossibleCells) = 1)
+       \/ (* Search in a column *)
+          (\E c \in 1..GRID_SIZE, v \in ValidValue :
+              LET PossibleCells == {r \in 1..GRID_SIZE : IsPossible(grid, r, c, v)}
+              IN Cardinality(PossibleCells) = 1)
+       -- ... (Box search omitted for brevity) ...
+    /\ pc' = "done"
+    /\ UNCHANGED <<grid, solution>></code></pre>
+
+                    <h3>3. Genetic Algorithm Optimizer</h3>
+                    <p>This specification models the evolution loop. The <code>AddChild</code> action demonstrates how two parents are combined and potentially mutated to create a new "chromosome" (difficulty parameter) for the next generation.</p>
+                    <pre><code>(* Excerpt from GAOptimizer.tla *)
+
+-- Action: Add a new child to the next generation until it is full.
+AddChild ==
+    /\ pc = "add_child"
+    /\ IF Len(next_generation) < POPULATION_SIZE
+       THEN /\ \E p1_idx, p2_idx \in 1..Len(next_generation), r \in 0..99 :
+                LET parents == next_generation
+                    p1 == parents[p1_idx]
+                    p2 == parents[p2_idx]
+                    child == (p1 + p2) \div 2
+                    mutated_child == IF r < MUTATION_RATE_PCT
+                                     THEN child + (((2 * r) - PRECISION) \div 2)
+                                     ELSE child
+                IN next_generation' = Append(next_generation, mutated_child)
+            /\ pc' = "add_child"
+       ELSE /\ pc' = "yield"
+            /\ UNCHANGED <<next_generation>>
+    /\ UNCHANGED <<population, generation, history>></code></pre>
+
+                    <h2>Conclusion</h2>
+                    <p>By formally specifying these algorithms in TLA+ before writing a single line of Lua code, I was able to verify the correctness of my logic, prevent edge-case bugs in the difficulty adjustment system, and ensure the AI solver would strictly adhere to the intended heuristic hierarchy.</p>
+                    <ul class="actions">
+                        <li><a href="programming-sample-3.html" class="button primary icon solid fa-code">View the Lua Implementation</a></li>
+                    </ul>
+                    <ul class="actions">
+                        <li><a href="samples/tla-plus-aihelper-sample.pdf" class="button icon solid fa-download">Download TLA+ AI Sample (PDF)</a></li>
+                        <li><a href="samples/tla-plus-gaoptimizer-sample.pdf" class="button icon solid fa-download">Download TLA+ GA Sample (PDF)</a></li>
+                        <li><a href="samples/tla-plus-profile-manager-sample.pdf" class="button icon solid fa-download">Download TLA+ ANFIS Sample (PDF)</a></li>
+                    </ul>
+                    <ul class="actions">
+                        <li><a href="design-samples-overview.html" class="button">Back to Design Samples</a></li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <footer id="footer">
+            <div class="inner">
+                <ul class="icons">
+                    <li><a href="https://www.linkedin.com/in/robert-gervais-358928249/" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                    <li><a href="https://x.com/RobertGDev" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+                </ul>
+                <ul class="copyright">
+                    <li>&copy; Robert Gervais</li>
+                    <li>Design: <a href="https://html5.up.net">HTML5 UP</a></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>

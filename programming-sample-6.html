@@ -1,0 +1,236 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Programming Sample: KMath Expression System - Robert Gervais Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+
+    <div id="wrapper">
+
+        <header id="header">
+            <a href="index.html" class="logo"><strong>Robert Gervais</strong> <span>Portfolio</span></a>
+            <nav>
+                <a href="#menu">Menu</a>
+            </nav>
+        </header>
+
+        <nav id="menu">
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="landing.html">Samples</a></li>
+                <li><a href="programming-samples-overview.html">Programming Samples</a></li>
+            </ul>
+            <ul class="actions stacked">
+                <li><a href="robert-gervais-resume.pdf" class="button primary fit" target="_blank">View Resume (PDF)</a></li>
+            </ul>
+        </nav>
+
+        <div id="main" class="alt">
+
+            <section id="one">
+                <div class="inner">
+                    <header class="major">
+                        <h1>Demon Crush: KMath System</h1>
+                    </header>
+                    <span class="image main"><img src="images/demon-crush-by-reverting-castles.jpg" alt="Demon Crush Image by Reverting Castles" /></span>
+
+                    <h2>Project Goal</h2>
+                    <p>For "Demon Crush," I needed a way to empower designers to create complex gameplay formulas (e.g., damage scaling, health curves) without requiring constant C++ recompilation. I engineered <strong>KMath</strong>, a custom string-based expression parser and calculator that supports arithmetic, logic operations, and a specialized syntax ("KCurveCommander") for querying Unreal Engine Curve Tables in real-time.</p>
+                    <p><strong>Tools/Languages:</strong> C++, Reverse Polish Notation (RPN), Extended Backus-Naur Form (EBNF) Grammar, Unreal Engine Data Assets.</p>
+
+                    <h2>Technical Highlights</h2>
+                    <ul>
+                        <li><strong>Custom Lexer & Parser:</strong> Implemented a robust tokenizer (`TokenizeString`) that breaks raw strings into operands and operators based on a strict <strong>EBNF Grammar</strong> I designed.</li>
+                        <li><strong>RPN Evaluation:</strong> Utilized a stack-based <strong>Reverse Polish Notation (RPN)</strong> algorithm (`RPNCalc`) to handle operator precedence (e.g., multiplication before addition) and parenthetical grouping correctly.</li>
+                        <li><strong>Curve Commander Syntax:</strong> Designed a proprietary syntax extension (e.g., <code>@Damage.Eval@#3.5</code>) that allows the parser to identify, load, and query `FRichCurve` data dynamically during evaluation.</li>
+                        <li><strong>Optimization:</strong> Created `UKMathDataAsset` to pre-calculate and cache expressions that are determined to be constant (`IsConfirmedConstant`), minimizing runtime overhead for static math.</li>
+                    </ul>
+
+                    <h2>Code Snippets</h2>
+                    <p>The system relies on a strict parsing pipeline: Tokenize -> Parse -> Evaluate. The snippets below demonstrate the core stack-based calculation and the specialized curve parsing logic.</p>
+
+                    <h3>Snippet 1: Reverse Polish Notation (RPN) Calculator</h3>
+                    <p>This function drives the core mathematics. It pops operands off the stack, applies the operator token (parsed from the input string), and pushes the result back onto the stack. This supports complex nesting and order of operations.</p>
+                    <pre><code>// Excerpt from KMath.cpp
+
+bool KMath::RPNCalc(TArray&lt;double&gt;& opnStack, TArray&lt;TCHAR&gt;& optStack)
+{
+    // Pop the top two operands
+    double opB = opnStack.Top();
+    opnStack.Pop();
+
+    double opA = opnStack.Top();
+    opnStack.Pop();
+
+    // Pop the operator
+    TCHAR opChar = optStack.Top();
+    optStack.Pop();
+
+    double Result;
+    // Perform arithmetic based on the token ('+', '-', 'm' for Min, etc.)
+    if (DoArithmetic(opA, opB, opChar, Result))
+    {
+        // Push result back for the next operation
+        opnStack.Push(Result);
+        return true;
+    }
+    return false;
+}</code></pre>
+
+                    <h3>Snippet 2: Curve Commander Parsing</h3>
+                    <p>This logic handles the "Curve Commander" feature. When the tokenizer detects the specific syntax (marked by <code>IsCurveFloatToken</code> or '#'), it parses the Curve Name, the Command (Eval, KeyVal), and the Operand to perform a lookup against Unreal's `UCurveTable`.</p>
+                    <pre><code>// Excerpt from KMath.cpp
+
+bool KMath::ParseCurveOperand(const int32 tokPos, ECurveCommand curveCmd)
+{
+    bool success = false;
+    uint32 i = tokPos;
+    FString CurveOperandString;
+
+    // Extract the numeric operand string from tokens
+    do
+    {
+        if (IsNegationToken(a_tokExpr[i], i))
+            CurveOperandString.AppendChar(a_tokExpr[i]);
+        if (IsNumberToken(a_tokExpr[i]))
+            CurveOperandString.AppendChar(a_tokExpr[i]);
+        if (IsDotToken(a_tokExpr[i]))
+            CurveOperandString.AppendChar(a_tokExpr[i]);
+        ++i;
+    } while (!IsNULToken(a_tokExpr[i]));
+
+    // Execute the specific command logic
+    switch (curveCmd)
+    {
+    case ECurveCommand::Eval:
+        // Evaluate curve at time X
+        d_curveX_operand = FCString::Atod(*CurveOperandString);
+        success = true;
+        break;
+    case ECurveCommand::KeyVal:
+        // Get value at specific Key Index
+        i_curveKey_operand = FCString::Atoi(*CurveOperandString);
+        success = true;
+        break;
+    // ... (AsInt case) ...
+    }
+
+    return success;
+}</code></pre>
+
+                    <h2>Test Driven Development</h2>
+                    <p>Given the complexity of parsing raw strings into mathematical operations, TDD was essential. I created a dedicated testing namespace <code>KMathTests</code> to validate every stage of the pipeline—from tokenization to final computation—before exposing the system to designers. This ensured that operator precedence, syntax validation, and curve lookups were robust and bug-free.</p>
+
+                    <h3>Snippet 3: Arithmetic & Precedence Tests</h3>
+                    <p>This suite verifies that the RPN calculator correctly handles operator precedence and parenthetical grouping. I specifically wrote tests to ensure multiplication (<code>*</code>) occurred before addition (<code>+</code>) unless overridden by parentheses.</p>
+                    <pre><code>// Excerpt from KMathTests.hpp
+
+class ComputeMathExpressionFunctorUnit
+{
+public:
+    static void Test0()
+    {
+        ComputeMathExpression testMatExprObj;
+        // Verify (3.2 + 4.5) * 2.0 = 15.4
+        // This ensures parentheses override standard precedence
+        double check_testObjStr = testMatExprObj("(3.2 + 4.5) * 2.0");
+        FPlatformMisc::LocalPrint(*FString::Printf(TEXT("Result: %f\n"), check_testObjStr));
+    }
+
+    static void Test1()
+    {
+        ComputeMathExpression testMatExprObj;
+        // Verify order of operations: 5.0 + (3.0 * 4.0) = 17.0
+        // This ensures multiplication happens before addition
+        double check_testObjStr = testMatExprObj("5.0+3.0*4.0");
+        FPlatformMisc::LocalPrint(*FString::Printf(TEXT("Result: %f\n"), check_testObjStr));
+    }
+};</code></pre>
+
+                    <h3>Snippet 4: Curve Syntax Integration Tests</h3>
+                    <p>To support the custom "Curve Commander" syntax, I wrote integration tests that verified the parser could correctly interpret commands like <code>KeyVal</code> or <code>Eval</code> embedded within string tokens.</p>
+                    <pre><code>// Excerpt from KMathTests.hpp
+
+class LookupHealthCurveValueUnit
+{
+public:
+    static void Test1()
+    {
+        ComputeMathExpression testMatExprObj;
+        // Test explicit KeyVal command: Look up key 2 in Health curve
+        // Syntax: @CurveName.Command@#Operand
+        double check_testObjStr = testMatExprObj("@Health.KeyVal@#2"); 
+        FPlatformMisc::LocalPrint(*FString::Printf(TEXT("Health Key 2: %f\n"), check_testObjStr));
+    }
+
+    static void Test2()
+    {
+        ComputeMathExpression testMatExprObj;
+        // Test Eval command: Evaluate Health curve at time 3.4
+        double check_testObjStr = testMatExprObj("@Health.Eval@#3.4");
+        FPlatformMisc::LocalPrint(*FString::Printf(TEXT("Health Time 3.4: %f\n"), check_testObjStr));
+    }
+};</code></pre>
+
+                    <section id="two">
+                        <div class="inner">
+                            <header class="major">
+                                <h2>Game Trailer</h2>
+                            </header>
+                            <p style="margin-top: 2em;">This is the official game trailer, which features exciting combat set in Gochima Village, which I based on ancient Okinawa.</p>
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000;">
+                                <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                                        src="https://www.youtube.com/embed/jqNxh6232JI?si=efQAloe2MaEMCbFn"
+                                        title="YouTube video player"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                            <p class="video-caption">Video and image: Reverting Castles</p>
+                        </div>
+                    </section>
+
+                    <h2>Conclusion</h2>
+                    <p>KMath successfully decoupled game balance from the codebase. By allowing designers to write expressions like <code>(@PlayerLevel@ * 1.5) + @Damage.Eval@#AttackSpeed</code> directly in the editor, we significantly reduced iteration time. The system was rigorously verified using the `KMathTests` unit testing suite to ensure mathematical accuracy.</p>
+                    <ul class="actions">
+                        <li><a href="https://store.steampowered.com/app/2753400/Demon_Crush/" class="button primary icon brands fa-steam">Download on Steam</a></li>
+                        <li><a href="samples/robert-gervais-kcurvecommander-doc.pdf" class="button icon solid fa-download">Download Documentation (PDF)</a></li>
+                    </ul>
+                    <ul class="actions">
+                        <li><a href="programming-samples-overview.html" class="button">Back to Programming Samples</a></li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <footer id="footer">
+            <div class="inner">
+                <ul class="icons">
+                    <li><a href="https://www.linkedin.com/in/robert-gervais-358928249/" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                    <li><a href="https://x.com/RobertGDev" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+                </ul>
+                <ul class="copyright">
+                    <li>&copy; Robert Gervais</li>
+                    <li>Design: <a href="https://html5.up.net">HTML5 UP</a></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>

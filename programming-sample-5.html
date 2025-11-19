@@ -1,0 +1,191 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Programming Sample: TDD Intensity System - Robert Gervais Portfolio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+
+    <div id="wrapper">
+
+        <header id="header">
+            <a href="index.html" class="logo"><strong>Robert Gervais</strong> <span>Portfolio</span></a>
+            <nav>
+                <a href="#menu">Menu</a>
+            </nav>
+        </header>
+
+        <nav id="menu">
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="landing.html">Samples</a></li>
+                <li><a href="programming-samples-overview.html">Programming Samples</a></li>
+            </ul>
+            <ul class="actions stacked">
+                <li><a href="robert-gervais-resume.pdf" class="button primary fit" target="_blank">View Resume (PDF)</a></li>
+            </ul>
+        </nav>
+
+        <div id="main" class="alt">
+
+            <section id="one">
+                <div class="inner">
+                    <header class="major">
+                        <h1>Demon Crush: Intensity System</h1>
+                    </header>
+                    <span class="image main"><img src="images/demon-crush-by-reverting-castles.jpg" alt="Demon Crush Image by Reverting Castles" /></span>
+
+                    <h2>Project Goal</h2>
+                    <p>For "Demon Crush" (Project K), I designed a dynamic difficulty system (The Intensity System) based on <strong>Fuzzy Logic</strong>. To ensure the complex mathematical models—specifically trapezoidal linguistic variables and defuzzification—were accurate before gameplay integration, I implemented a strict <strong>Test Driven Development (TDD)</strong> workflow in C++.</p>
+                    <p><strong>Tools/Languages:</strong> Unreal Engine 5, C++, Fuzzy Logic Mathematics, Unit Testing.</p>
+
+                    <h2>Technical Highlights</h2>
+                    <ul>
+                        <li><strong>Modular Test Architecture:</strong> Encapsulated all unit tests within a dedicated <code>IntensitySysTests</code> namespace and separated them into logical units (e.g., <code>TrapezoidUnit</code>, <code>TrapDefuzzificationUnit</code>), allowing for isolated verification of specific math components.</li>
+                        <li><strong>Fuzzy Logic Scenario Testing:</strong> Created complex test scenarios that mimic actual gameplay states (e.g., "Low Enemy Count" + "High Combo Points") to verify that the fuzzy rule tokenizer output the correct "Intensity" value.</li>
+                        <li><strong>Debug Integration:</strong> Integrated the test runner directly into the <code>AProjectKGameMode::StartPlay</code> lifecycle. Wrapped in <code>#if !UE_BUILD_SHIPPING</code>, this ensures the system self-validates on every startup during development without impacting shipping builds.</li>
+                        <li><strong>Validation & Logging:</strong> Utilized Unreal's <code>check()</code> assertions to enforce pointers and <code>FPlatformMisc::LocalPrint</code> to provide verbose console feedback on mathematical outputs during test execution.</li>
+                    </ul>
+
+                    <h2>Code Snippets</h2>
+                    <p>The following snippets demonstrate the TDD approach: first, defining a complex test case that establishes the rules of the system, and second, the harness that runs these tests during game initialization.</p>
+
+                    <h3>Snippet 1: Defining a Gameplay Scenario Test Case</h3>
+                    <p>This test from `IntensitySysTests.hpp` serves two purposes: it verifies the Defuzzification logic and acts as a playground to tune game balance. I define Linguistic Variables (Enemy Count, Combo Points) and rules (e.g., "If Enemy Count is Low OR Combo Points are Low, Then Intensity is Low"), then run inputs through the solver to verify the output.</p>
+                    <pre><code>// Excerpt from IntensitySysTests.hpp
+
+// basic fuzzy scenario test (enemy number, combo pts -> intensity value)
+static void Test1(TrapDefuzzification* tempTrapDefuzzification)
+{
+    check(tempTrapDefuzzification != nullptr);
+
+    // 1. Define Linguistic Variables (The "Vocabulary" of the system)
+    TrapLinguisticVariable* EnemyNum = new TrapLinguisticVariable(false, TEXT("Enemy_Num"));
+    TrapLinguisticVariable* ComboPts = new TrapLinguisticVariable(false, TEXT("Combo_Pts"));
+    TrapLinguisticVariable* IntensityValue = new TrapLinguisticVariable(true, TEXT("Intensity_Value"));
+
+    // 2. Define Fuzzy Sets (The "Adjectives")
+    // "Low Enemy Count" is between 1.0 and 4.0 enemies
+    EnemyNum->AddLinguisticValue(new Trapezoid(TEXT("Low_Enemy_Count"), 1.0, 1.5, 2.0, 4.0));
+    // "High Combo Points" is between 400.0 and 775.0
+    ComboPts->AddLinguisticValue(new Trapezoid(TEXT("High_Combo_Points"), 400.0, 500.0, 625.0, 775.0));
+    
+    // ... (Additional set definitions omitted for brevity) ...
+
+    // 3. Define Fuzzy Rules (The "Logic")
+    // Rule: If enemy count is low OR combo count is low, then intensity value is low
+    TrapFuzzyRuleHandle* Sigma1 = new TrapFuzzyRuleHandle();
+    Sigma1->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::EMPTY, EnemyNum, TEXT("Low_Enemy_Count")));
+    Sigma1->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::OR, ComboPts, TEXT("Low_Combo_Points")));
+    Sigma1->AddTrapFuzzyTokenToRule(new TrapFuzzyRuleTokenizer(false, fuzzyOperation::EMPTY, IntensityValue, TEXT("Low_Intensity")));
+    
+    tempTrapDefuzzification->AddFuzzyRule(Sigma1);
+
+    // 4. Run the Test
+    // Create inputs: 5 Enemies, 600 Combo Points
+    FuzzyInput* testEnemyNum = new FuzzyInput(TEXT("Enemy_Num"), 5);
+    FuzzyInput* testComboPts = new FuzzyInput(TEXT("Combo_Pts"), 600);
+
+    TMap&lt;FString, FuzzyInput*&gt; testFuzzyInputs;
+    testFuzzyInputs.Add(testEnemyNum->GetVariableName(), testEnemyNum);
+    testFuzzyInputs.Add(testComboPts->GetVariableName(), testComboPts);
+
+    // Defuzzify and Print Result
+    double testResult = tempTrapDefuzzification->DefuzzifyTrapezoid(tempTrapDefuzzification->CalculateFuzzyRules(testFuzzyInputs));
+    FPlatformMisc::LocalPrint(*FString::Printf(TEXT("[IntensitySys-TrapDefuzzification: Test 1] Test Defuzzification Result: %lf\n"), testResult));
+}</code></pre>
+
+                    <h3>Snippet 2: Integration Test Runner (Game Mode)</h3>
+                    <p>In `ProjectKGameMode.cpp`, I implemented a test runner that executes the unit tests on startup. This allows for rapid iteration; if the math breaks, I know immediately upon launching the PIE (Play In Editor) session.</p>
+                    <pre><code>// Excerpt from ProjectKGameMode.cpp
+
+void AProjectKGameMode::StartPlay()
+{
+    // ... (Standard Initialization) ...
+
+    #if !UE_BUILD_SHIPPING
+        TestIntensitySys(); // Run TDD Suite on startup
+        // TestKMath();
+    #endif
+}
+
+void AProjectKGameMode::TestIntensitySys()
+{
+    FString TLVName = TEXT("TestLV");
+
+    // Unit Test: Trapezoids
+    Trapezoid* testTrapV = new Trapezoid(TLVName, 1.0, 2.0, 3.0, 4.0);
+    check(testTrapV != nullptr);
+    IntensitySysTests::TrapezoidUnit::Test0(testTrapV);
+    // ... (Additional Trapezoid Tests) ...
+
+    // Unit Test: Defuzzification Scenarios
+    TrapDefuzzification* testTrapDefuzzificationScenario_1 = new TrapDefuzzification();
+    check(testTrapDefuzzificationScenario_1 != nullptr);
+
+    // Run the complex scenario defined in Snippet 1
+    IntensitySysTests::TrapDefuzzificationUnit::Test1(testTrapDefuzzificationScenario_1);
+    
+    // ... (Clean up and further testing) ...
+}</code></pre>
+
+                    <section id="two">
+                        <div class="inner">
+                            <header class="major">
+                                <h2>Game Trailer</h2>
+                            </header>
+                            <p style="margin-top: 2em;">This is the official game trailer, which features exciting combat set in Gochima Village, which I based on ancient Okinawa.</p>
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000;">
+                                <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                                        src="https://www.youtube.com/embed/jqNxh6232JI?si=efQAloe2MaEMCbFn"
+                                        title="YouTube video player"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                            <p class="video-caption">Video and image: Reverting Castles</p>
+                        </div>
+                    </section>
+
+                    <h2>Conclusion</h2>
+                    <p>By adhering to Test Driven Development for the Intensity System, I was able to decouple the mathematical verification from the gameplay implementation. This meant I could perfect the fuzzy logic curves and rule processing in isolation, ensuring that when the system was finally hooked up to the actual enemy spawners, the underlying logic was already proven stable.</p>
+                    <ul class="actions">
+                        <li><a href="https://store.steampowered.com/app/2753400/Demon_Crush/" class="button primary icon brands fa-steam">Download on Steam</a></li>
+                    </ul>
+                    <ul class="actions">
+                        <li><a href="programming-samples-overview.html" class="button">Back to Programming Samples</a></li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+
+        <footer id="footer">
+            <div class="inner">
+                <ul class="icons">
+                    <li><a href="https://www.linkedin.com/in/robert-gervais-358928249/" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                    <li><a href="https://x.com/RobertGDev" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+                </ul>
+                <ul class="copyright">
+                    <li>&copy; Robert Gervais</li>
+                    <li>Design: <a href="https://html5.up.net">HTML5 UP</a></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>
