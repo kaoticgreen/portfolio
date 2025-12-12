@@ -8,15 +8,13 @@
 	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 
 	<style>
-		/* Removes default browser padding that pushes menu items to the right */
 		#menu ul {
 			padding: 0;
 			margin: 0;
 			list-style: none;
-			text-align: center; /* Centers the text links */
+			text-align: center;
 		}
 
-			/* Centers the stacked buttons */
 			#menu ul.actions.stacked {
 				display: flex;
 				flex-direction: column;
@@ -24,10 +22,121 @@
 				justify-content: center;
 			}
 
-		/* Optional: Adjusts the 'fit' button so it centers nicely rather than stretching 100% */
 		#menu .button.fit {
 			width: auto;
 			min-width: 200px;
+		}
+
+		/* --- TIMELINE CSS --- */
+		.timeline {
+			position: relative;
+			max-width: 1200px;
+			margin: 40px auto;
+		}
+
+			/* The vertical line */
+			.timeline::after {
+				content: '';
+				position: absolute;
+				width: 4px;
+				background-color: #ffffff;
+				top: 0;
+				bottom: 0;
+				left: 50%;
+				margin-left: -2px;
+			}
+
+		.timeline-item {
+			padding: 10px 40px;
+			position: relative;
+			background-color: inherit;
+			width: 50%;
+			box-sizing: border-box;
+			opacity: 0; /* Hidden by default for animation */
+			transform: translateY(30px);
+			transition: all 0.6s ease-out;
+		}
+
+			/* The dots on the line */
+			.timeline-item::after {
+				content: '';
+				position: absolute;
+				width: 20px;
+				height: 20px;
+				right: -10px;
+				background-color: #242943; /* Matches background */
+				border: 4px solid #ffffff;
+				top: 20px;
+				border-radius: 50%;
+				z-index: 1;
+			}
+
+			/* Desktop: Alternating Sides */
+			.timeline-item.left {
+				left: 0;
+			}
+
+			.timeline-item.right {
+				left: 50%;
+			}
+
+				.timeline-item.right::after {
+					left: -10px;
+				}
+
+			/* Content Box Styling */
+			.timeline-item .content {
+				padding: 20px 30px;
+				background-color: #2a2f4a;
+				position: relative;
+				border-radius: 4px;
+				border-left: 4px solid #9bf1ff; /* Accent color */
+			}
+
+			.timeline-item.right .content {
+				border-left: none;
+				border-right: 4px solid #9bf1ff;
+			}
+
+			/* Animation Trigger Class */
+			.timeline-item.in-view {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+		/* --- MOBILE RESPONSIVENESS --- */
+		@media screen and (max-width: 768px) {
+			/* Move line to the left */
+			.timeline::after {
+				left: 31px;
+			}
+
+			/* Make items full width */
+			.timeline-item {
+				width: 100%;
+				padding-left: 70px;
+				padding-right: 25px;
+			}
+
+				/* Reset left/right positioning */
+				.timeline-item.left, .timeline-item.right {
+					left: 0;
+				}
+
+				/* Align dots to the new line position */
+				.timeline-item::after {
+					left: 21px;
+				}
+
+				.timeline-item.right::after {
+					left: 21px;
+				}
+
+				/* Standardize borders to the left side */
+				.timeline-item.right .content {
+					border-right: none;
+					border-left: 4px solid #9bf1ff;
+				}
 		}
 	</style>
 </head>
@@ -43,9 +152,6 @@
 		</header>
 
 		<nav id="menu">
-			<ul class="links">
-				<li><a href="landing.html">All Samples</a></li>
-			</ul>
 			<ul class="actions stacked">
 				<li><a href="robert-gervais-resume.pdf" class="button primary fit" target="_blank">View Resume (PDF)</a></li>
 			</ul>
@@ -70,7 +176,6 @@
 		<div id="main">
 
 			<section id="one" class="tiles">
-
 				<article>
 					<span class="image">
 						<img src="images/unreal-engine-by-epic-games-inc.jpg" alt="Unreal Engine" />
@@ -80,7 +185,6 @@
 						<p>Education & Learning Director</p>
 					</header>
 				</article>
-
 				<article>
 					<span class="image">
 						<img src="images/unreal-editor-for-fortnite-by-epic-games-inc.jpg" alt="UEFN" />
@@ -90,7 +194,6 @@
 						<p>Education & Learning Lead</p>
 					</header>
 				</article>
-
 				<article>
 					<span class="image">
 						<img src="images/fortnite-by-epic-games-inc.jpg" alt="Fortnite" />
@@ -100,7 +203,6 @@
 						<p>Senior Technical Writer</p>
 					</header>
 				</article>
-
 				<article>
 					<span class="image">
 						<img src="images/fortnite-creative-square.jpg" alt="Fortnite Creative" />
@@ -110,7 +212,6 @@
 						<p>Technical Writer</p>
 					</header>
 				</article>
-
 				<article>
 					<span class="image">
 						<img src="images/epic-online-services-by-epic-games-inc.jpg" alt="Epic Online Services" />
@@ -120,7 +221,6 @@
 						<p>Training Content Developer</p>
 					</header>
 				</article>
-
 				<article>
 					<span class="image">
 						<img src="images/paragon-by-epic-games-inc.jpg" alt="Paragon" />
@@ -130,20 +230,55 @@
 						<p>Editor</p>
 					</header>
 				</article>
-
 			</section>
 
 			<section id="two">
 				<div class="inner">
 					<header class="major">
-						<h2>About Me</h2>
+						<h2>Career Milestones</h2>
 					</header>
-					<p>I have deep domain knowledge in game development, and my expertise spans technical writing, design, and programming. My work includes technical direction, debugging, profiling, and implementing gameplay systems in C++, Blueprints, Lua, and Verse, as well as high-level algorithm design, technical writing, and creative skills. I blend all of my abilities to build immersive and engaging experiences from concept to implementation.</p>
-					<ul class="actions">
-						<li><a href="robert-gervais-resume.pdf" class="button primary" target="_blank">View Resume (PDF)</a></li>
-						<li><a href="landing.html" class="button next">View Detailed Samples</a></li>
-					</ul>
+
+					<div class="timeline">
+
+						<div class="timeline-item left">
+							<div class="content">
+								<h3>Shipped AI Learning Buddy</h3>
+								<p>Unified all product documentation under a single landing experience. Leveraged this data to ship the Epic Developer Assistant—an AI learning buddy now integrated as a core feature of Unreal Engine.</p>
+								<h6>2025</h6>
+							</div>
+						</div>
+
+						<div class="timeline-item right">
+							<div class="content">
+								<h3>Graphed Knowledge</h3>
+								<p>Broke down knowledge silos by interviewing over 100 developers. Graphed internal knowledge using a SKOS schema to bridge the gap between Fortnite and Unreal Engine workflows.</p>
+								<h6>2021</h6>
+							</div>
+						</div>
+
+						<div class="timeline-item left">
+							<div class="content">
+								<h3>Standardized Workflows</h3>
+								<p>Co-authored an industry-leading white paper on distributed workflows (UnrealGameSync) for Fortnite and Paragon. Simultaneously developed Epic's first Technical Style Guide to standardize the brand's voice.</p>
+								<h6>2019</h6>
+							</div>
+						</div>
+
+						<div class="timeline-item right">
+							<div class="content">
+								<h3>Scaled Docs as Code</h3>
+								<p>Developed tools to autogenerate code snippets and reference documentation directly from source code. This paved the way for high-traffic releases for all of Epic's products and services.</p>
+								<h6>2017</h6>
+							</div>
+						</div>
+
+					</div>
 				</div>
+
+				<p style="text-align: center; margin-top: 2em;">
+					Want to get in touch? E-mail me at <a href="mailto:robert.gervais@outlook.com">robert.gervais@outlook.com</a> to say hello.
+				</p>
+
 			</section>
 
 		</div>
@@ -174,6 +309,7 @@
 
 	<script>
 		document.addEventListener('DOMContentLoaded', (event) => {
+			// Typed.js initialization
 			var options = {
 				strings: ["Programming.", "Technical Writing.", "User-Experience.", "Visual Design.", "Leadership.", "Management."],
 				typeSpeed: 70,
@@ -183,6 +319,20 @@
 				showCursor: true
 			};
 			var typed = new Typed('#typed-text', options);
+
+			// Timeline Animation Logic
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('in-view');
+					}
+				});
+			}, { threshold: 0.1 });
+
+			const timelineItems = document.querySelectorAll('.timeline-item');
+			timelineItems.forEach(item => {
+				observer.observe(item);
+			});
 		});
 	</script>
 
