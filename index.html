@@ -6,6 +6,30 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<link rel="stylesheet" href="assets/css/main.css" />
 	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+
+	<style>
+		/* Removes default browser padding that pushes menu items to the right */
+		#menu ul {
+			padding: 0;
+			margin: 0;
+			list-style: none;
+			text-align: center; /* Centers the text links */
+		}
+
+			/* Centers the stacked buttons */
+			#menu ul.actions.stacked {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+			}
+
+		/* Optional: Adjusts the 'fit' button so it centers nicely rather than stretching 100% */
+		#menu .button.fit {
+			width: auto;
+			min-width: 200px;
+		}
+	</style>
 </head>
 <body class="is-preload">
 
@@ -151,7 +175,7 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', (event) => {
 			var options = {
-                strings: ["Programming.", "Technical Writing.", "User-Experience.", "Visual Design.", "Leadership.", "Management."],
+				strings: ["Programming.", "Technical Writing.", "User-Experience.", "Visual Design.", "Leadership.", "Management."],
 				typeSpeed: 70,
 				backSpeed: 50,
 				backDelay: 1500,
