@@ -125,8 +125,10 @@
 		/* Container for the video to center it and space it from the dot */
 		.video-container {
 			max-width: 800px; /* Restrict width so it looks nice on desktop */
-			margin: 50px auto 0 auto; /* Top margin pushes it down from the dot */
+			margin: 50px auto; /* Changed to equal top/bottom margins for spacing in timeline */
 			padding: 0 20px; /* Safety padding for mobile edges */
+			position: relative; /* Ensure z-index works */
+			z-index: 2; /* Sit on top of the timeline line */
 		}
 
 		/* The responsive wrapper from landing.html */
@@ -316,6 +318,16 @@
 						</div>
 					</div>
 
+					<div class="video-container">
+						<div class="video-wrapper">
+							<iframe src="https://www.youtube.com/embed/p4RcDpGQ_tI?si=hAJf7rdIxgHCQbrP"
+									title="Workflow on Fortnite"
+									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+									allowfullscreen>
+							</iframe>
+						</div>
+					</div>
+
 					<div class="timeline-item left">
 						<div class="content">
 							<h3>Standardized Workflows</h3>
@@ -340,19 +352,27 @@
 						</div>
 					</div>
 
+					<div class="video-container">
+						<div class="video-wrapper">
+							<iframe src="https://www.youtube.com/embed/_0BdF6Lp48w?si=TgARBX2BoOXRL1eg"
+									title="Carlsbad Desalination Facility"
+									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+									allowfullscreen>
+							</iframe>
+						</div>
+					</div>
+
+					<div class="timeline-item right">
+						<div class="content">
+							<h3>Planned Desalination</h3>
+							<p>On the heels of record drought conditions in Southern California, I worked with the world's top engineers and scientists to plan the largest desalination project in the Western Hemisphere.</p>
+							<h6>2003</h6>
+						</div>
+					</div>
+
 					<div class="timeline-end-icon"></div>
 
-				</div> <div class="video-container">
-					<div class="video-wrapper">
-						<iframe src="https://www.youtube.com/embed/_0BdF6Lp48w?si=TgARBX2BoOXRL1eg"
-								title="Carlsbad Desalination Facility"
-								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-								allowfullscreen>
-						</iframe>
-					</div>
 				</div>
-
-</div>
 
 				<p style="text-align: center; margin-top: 4em;">
 					Want to get in touch? E-mail me at <a href="mailto:robert.gervais@outlook.com">robert.gervais@outlook.com</a> to say hello.
